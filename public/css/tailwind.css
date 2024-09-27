@@ -1,0 +1,230 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+.ol-popup {
+  position: absolute;
+  background-color: white;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  bottom: 12px;
+  left: -50px;
+  min-width: 280px;
+}
+
+.ol-popup-closer {
+  text-decoration: none;
+  position: absolute;
+  top: 2px;
+  right: 8px;
+}
+
+.ol-popup-closer:after {
+  content: '✖';
+}
+
+.ff-monts {
+  font-family: "Montserrat", system-ui;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.text-primary-color {
+  color: #21285a;
+}
+
+.text-primary-color-alt {
+  color: #00fff0;
+}
+
+.text-secondary-color {
+  color: #a600ff;
+}
+
+.text-adc-color {
+  color: #979797;
+}
+
+.bg-primary-color {
+  background-color: #21285a;
+}
+
+.bg-primary-color-alt {
+  background-color: #00fff0;
+}
+
+.bg-secondary-color {
+  background-color: #a600ff;
+}
+
+.bg-adc-color {
+  background-color: #a600ff;
+}
+
+
+/* ! ||--------------------------------------------------------------------------------||
+// ! ||                    Estilos para la seccion lista de tiendas                    ||
+// ! ||--------------------------------------------------------------------------------||
+*/
+
+/* Diferentes estilos para la tipografia Montserrat */
+.smsp {
+  font-family: "Montserrat", system-ui !important;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+
+.store-icon {
+  background-color: #ccc;
+}
+
+.scrollbar {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px;
+  height: 400px;
+  width: 100%;
+  scrollbar-width: none;
+}
+
+.scrollbar-i {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9;
+  opacity: 0;
+  display: none;
+  transition: all .6s linear;
+  animation: infinite ease-in 1.5s scrollDown;
+}
+
+.scrollbar-i::before {
+  content: 'Hacer Scroll';
+  position: absolute;
+  height: 10px;
+  width: 100%;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9;
+  opacity: .7;
+  transition: all .6s linear;
+  animation: infinite ease-in 1.5s scrollDown;
+}
+
+@keyframes scrollDown {
+  0% {
+    bottom: 30px;
+  }
+
+  60% {
+    bottom: 15px
+  }
+
+  100% {
+    bottom: 30px;
+  }
+
+
+}
+
+/* ! ||--------------------------------------------------------------------------------||
+// ! ||                Estilos para la sección de descripcion de tienda                ||
+// ! ||--------------------------------------------------------------------------------||
+*/
+
+.punto-descripcion {
+  overflow: hidden;
+  max-height: 250px;
+  transition: height 1s ease-in-out, opacity 1s ease-in-out;
+  width: 100%;
+}
+
+.punto-mapa {
+  transition: all 1s ease-in-out;
+  /* Para animar los cambios en el mapa */
+}
+
+.show-descripcion {
+  visibility: visible;
+  height: 100%;
+  opacity: 1;
+}
+
+.hide-descripcion {
+  visibility: hidden;
+  height: 0;
+  min-height: auto;
+  opacity: 0;
+}
+
+/* ! ||--------------------------------------------------------------------------------||
+// ! ||                Estilos para la sección de Store Filters               ||
+// ! ||--------------------------------------------------------------------------------||
+*/
+
+#storesFilters option {
+  text-transform: capitalize;
+}
+
+.select2-results__options::-webkit-scrollbar {
+  width: 16px;
+  background-clip: padding-box;
+}
+
+.select2-results__options::-webkit-scrollbar-track {
+  background-color: #F4F4F4;
+  height: 8px;
+  background-clip: padding-box;
+  border-right: 10px solid rgba(0, 0, 0, 0);
+  border-top: 10px solid rgba(0, 0, 0, 0);
+  border-bottom: 10px solid rgba(0, 0, 0, 0);
+}
+
+.select2-results__options::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  background-color: #0F2464;
+  border-right: 10px solid rgba(0, 0, 0, 0);
+  border-top: 10px solid rgba(0, 0, 0, 0);
+  border-bottom: 10px solid rgba(0, 0, 0, 0);
+}
+
+.select2-results__options::-webkit-scrollbar-button {
+  display: none;
+}
+
+.select2-results__options {
+  color: #0F2464;
+  font-family: "Montserrat", system-ui !important;
+  font-weight: 500;
+  text-transform: capitalize;
+  font-size: 16px;
+}
+
+.results-msg {
+  transition: all 1s ease-in-out;
+}
+
+.hide-noresults {
+  opacity: 0;
+  display: none;
+}
+
+.show-noresults {
+  opacity: 1;
+  display: block;
+}

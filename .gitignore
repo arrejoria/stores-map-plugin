@@ -1,0 +1,29 @@
+# Ignorar archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar archivos de logs
+*.log
+logs/
+
+# Ignorar archivos de configuración local
+.env
+config/*.local.php
+
+# Ignorar directorios de dependencias
+node_modules/
+vendor/
+
+# Ignorar directorios de compilación
+dist/
+build/
+
+# Ignorar archivos de IDEs
+.vscode/
+.idea/
+
+# Ignorar otros archivos temporales
+*.tmp
+*.bak
+*.swp
+
