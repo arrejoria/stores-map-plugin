@@ -177,9 +177,11 @@ html {
 // ! ||--------------------------------------------------------------------------------||
 */
 
-#storesFilters option {
+.stores-filter option {
   text-transform: capitalize;
 }
+
+.stores-filter {}
 
 .select2-results__options::-webkit-scrollbar {
   width: 16px;

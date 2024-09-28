@@ -1,37 +1,12 @@
 (function ($) {
   "use strict";
 
-  /**
-   * All of the code for your public-facing JavaScript source
-   * should reside in this file.
-   *
-   * Note: It has been assumed you will write jQuery code here, so the
-   * $ function reference has been prepared for usage within the scope
-   * of this function.
-   *
-   * This enables you to define handlers, for when the DOM is ready:
-   *
-   * $(function() {
-   *
-   * });
-   *
-   * When the window is loaded:
-   *
-   * $( window ).load(function() {
-   *
-   * });
-   *
-   * ...and/or other possibilities.
-   *
-   * Ideally, it is not considered best practise to attach more than a
-   * single DOM-ready or window-load handler for a particular page.
-   * Although scripts in the WordPress core, Plugins and Themes may be
-   * practising this, we should strive to set a better example in our own work.
-   */
-
-
   $(document).ready(function () {
-    console.log('spsm_data length: ' + spsm_stores_data.length);
+    /**
+     * !IMPORTANTE INICIALIZAR VARIABLE GLOBAL
+     */
+    const spsm_stores_data = spsm_data.stores_data ? JSON.parse(spsm_data.stores_data) : [];
+    const spsm_stores_empty = spsm_data.stores_empty ? stores_empty : false;
     const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
 
     $(popoverTriggerList).ready()

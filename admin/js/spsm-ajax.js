@@ -4,6 +4,7 @@
   $(window).load(function () {
     console.log('ajax file loaded');
 
+    var spsm_stores_data = spsm_data.stores_data > 0 ? JSON.parse(spsm_data.stores_data) : []
     // Enviar datos del punto de interes mediante AJAX 
     $('#crearPuntoForm').on('submit', function (e) {
       e.preventDefault();
@@ -39,8 +40,8 @@
           console.log(response);
 
           if (response.success) {
-            const store_data = JSON.parse(response.data.store_data);
             $('#storesEmpty').addClass('hidden');
+            const store_data = JSON.parse(response.data.store_data)
             // Iterar todos los puntos en un bucle
             // data.forEach(store => {
             const html = store_item_html(store_data.id, store_data.tienda_nombre);
@@ -49,8 +50,8 @@
 
             $('#crearPuntoForm')[0].reset()
 
-            
-            spsm_stores_data = [...spsm_stores_data, JSON.parse(response.data.store_data)]
+
+            spsm_stores_data = [...spsm_stores_data, store_data]
             console.log('spsm_stores length' + spsm_stores_data.length);
           } else {
             console.error('Error al crear la tienda:', response.store_data.message);
@@ -103,17 +104,17 @@
         },
       });
     });
-
-
     // $(document).on('click', '')
 
   })
 
-
-  function validar_marker_form_descriptions() {
-
-  }
-
+  /**
+   *  Template HTML para agregar a la lista de sucursales
+   *  @param {number} id - id de la sucursal
+   *  @param {string} nombre - nombre de la sucursal
+   *
+   *  @return {string} Devuelve el cuerpo html como string para insertar en el DOM                
+   */
   function store_item_html(id, nombre) {
     let html = `
 							<li class="store-item grid grid-cols-5 sm:grid-cols-8 items-center border text-center w-full mb-1">

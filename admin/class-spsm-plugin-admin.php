@@ -99,43 +99,35 @@ class Spsm_Plugin_Admin
 		wp_enqueue_script('map-script', plugin_dir_url(__FILE__) . 'js/map.js', array('jquery', 'ol-script'), null, false);
 		// Encolar el script principal del plugin con versión y dependencias
 		wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/spsm-plugin-admin.js', array('jquery'), $this->version, true);
+
+		$this->spsm_stores_localize_scripts();
 	}
 
-	
-    public function add_stores_data_to_head()
-    {
-        // Obtén todas las tiendas
-        $stores = $this->query_class->get_all_stores();
+
+	public function spsm_stores_localize_scripts()
+	{
+
+		// Obtén todas las tiendas y localidades
+		$stores = $this->query_class->get_all_stores();
 		$localidades = $this->query_class->get_all_localidades();
 
-        if (empty($stores)) {
-            echo '<script type="text/javascript">';
-            echo 'console.error("No hay datos de tiendas para cargar.");';
-            echo 'var spsm_stores_empty = true;';
-            echo 'var spsm_stores_data = [];';
-            echo 'var spsm_localidades_data = [];';
-            echo '</script>';
-            return; // Termina la ejecución si no hay tiendas
-        }
+		// Si no hay tiendas, indicarlo
+		if (empty($stores)) {
+			$stores = [];
+			$localidades = [];
+			$stores_empty = true;
+		} else {
+			$stores_empty = false;
+		}
 
-        // Verifica si la conversión a JSON es exitosa
-        $stores_json = json_encode($stores);
-        $localidades_json = json_encode($localidades);
-        if ($stores_json === false || $localidades_json === false) {
-            echo '<script type="text/javascript">';
-            echo 'console.error("Error al convertir los datos de las tiendas a JSON:", ' . json_encode(json_last_error_msg()) . ');';
-            echo '</script>';
-            return; // Termina la ejecución si hay error en la conversión a JSON
-        }
-
-        // Genera el código JavaScript para insertar las tiendas
-        echo '<script type="text/javascript">';
-        echo 'var spsm_stores_empty = false;';
-        echo 'var spsm_stores_data = ' . $stores_json . ';'; // Aquí ya es directamente el JSON
-        echo 'var spsm_localidades_data = ' . $localidades_json . ';'; // Aquí ya es directamente el JSON
-        echo 'console.log("Datos de tiendas y localidades cargados:", spsm_stores_data, spsm_localidades_data);';
-        echo '</script>';
-    }
+		// Localizar los datos para pasarlos a JavaScript
+		wp_localize_script($this->plugin_name, 'spsm_data', array(
+			'path' => plugin_dir_url(__FILE__),
+			'stores_empty' => $stores_empty,
+			'stores_data' => json_encode($stores),
+			'localidades_data' => json_encode($localidades),
+		));
+	}
 
 
 	public function spsm_admin_menu()
@@ -166,144 +158,191 @@ class Spsm_Plugin_Admin
 		if (!current_user_can('manage_options')) {
 			return;
 		} ?>
-		<div class="wrap">
-			<div class="container py-9 my-2 mx-auto px-0">
-				<h2 class="text-2xl mb-9">Cargar las tiendas que se mostrarán en el mapa</h2>
+<div class="wrap">
+    <div class="container py-9 my-2 mx-auto px-0">
+        <h2 class="text-2xl mb-9">Cargar las tiendas que se mostrarán en el mapa</h2>
 
-				<div class="bg-white flex flex-col md:grid sm:grid-cols-6 my-5 px-2 py-4 border rounded">
-					<!-- MAP SECTION -->
-					<div class="grid grid-cols-1 col-span-1 md:col-span-6 place-content-start gap-4 md:px-4 mb-5">
-						<div class="relative w-fit">
-							<h3 class="text-xl font-bold font-mono">Buscar en el mapa la ubicación de la tienda</h3>
-							<a class="font-normal italic absolute top-[-20px] right-0 sm:top-1 sm:right-[-40px] text-white text-base lowercase bg-sky-500 px-[10px] rounded-full cursor-pointer" tabindex="0" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="right" data-bs-content="Al buscar la dirección, obtendrás sus coordenadas exactas. Si la ubicación no es precisa, puedes ajustar manualmente el marcador en el mapa para seleccionar un punto específico.">i</a>
-						</div>
-						<div class="grid grid-cols-1 md:grid-cols-5 gap-2">
-							<input class="col-span-1 md:col-span-4 py-1" type="text" id="street" placeholder="Ingresa la dirección o calle" value="Av. Santa Fe 2349, CABA" />
-							<button id="search-button" class="col-span-1 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded font-bold uppercase">Buscar</button>
-							<p id="showStreet" class="mt-3 col-span-1 md:col-span-5"></p>
-						</div>
-						<!-- MAP SECTION HERE -->
-						<div id="map" style="width: 100%; height: 300px; margin-top: 10px;"></div>
+        <div class="bg-white flex flex-col md:grid sm:grid-cols-6 my-5 px-2 py-4 border rounded">
+            <!-- MAP SECTION -->
+            <div class="grid grid-cols-1 col-span-1 md:col-span-6 place-content-start gap-4 md:px-4 mb-5">
+                <div class="relative w-fit">
+                    <h3 class="text-xl font-bold font-mono">Buscar en el mapa la ubicación de la tienda</h3>
+                    <a class="font-normal italic absolute top-[-20px] right-0 sm:top-1 sm:right-[-40px] text-white text-base lowercase bg-sky-500 px-[10px] rounded-full cursor-pointer"
+                        tabindex="0" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="focus"
+                        data-bs-placement="right"
+                        data-bs-content="Al buscar la dirección, obtendrás sus coordenadas exactas. Si la ubicación no es precisa, puedes ajustar manualmente el marcador en el mapa para seleccionar un punto específico.">i</a>
+                </div>
 
-						<p class="px-3 py-2 rounded border inline-block w-auto">Al ingresar una ubicación que coincida con el resultado deseado, se obtendrán las coordenadas exactas para ubicar el marcador de la tienda en el mapa de inicio.</p>
+                <div class="grid grid-cols-1 md:grid-cols-7 gap-2">
+                    <input class="col-span-1 md:col-span-2 py-1" type="text" id="street" placeholder="Calle" value="" />
+                    <input class="col-span-1 py-1 md:col-span-1" type="text" id="streetNumber" placeholder="Atura"
+                        value="" />
+                    <input class="col-span-1 py-1 md:col-span-1" type="text" id="locality" placeholder="Localidad"
+                        value="" />
+                    <input class="col-span-1 py-1 md:col-span-1" type="text" id="city" placeholder="Ciudad" value="" />
+                    <input class="col-span-1 py-1 md:col-span-1" type="text" id="province" placeholder="Provincia"
+                        value="" />
+                    <button id="search-button"
+                        class="col-span-1 py-2  bg-sky-500 hover:bg-sky-600 text-white rounded font-bold uppercase">Buscar</button>
+                    <p id="showStreet" class="mt-3 col-span-1 md:col-span-12"></p>
+                </div>
 
-						<div id="popup" class="ol-popup">
-							<a id="popup-closer" class="ol-popup-closer" href="#"></a>
-							<div id="popup-content"></div>
-						</div>
-						<div class="modal fade" id="mapError" tabindex="-1" aria-labelledby="mapErrorLabel" aria-hidden="true">
-							<div class="modal-dialog modal-lg">
-								<div class="modal-content">
-									<div class="modal-header bg-primary text-white">
-										<h5 class="modal-title text-xl font-semibold" id="mapErrorLabel">Resultado no encontrado</h5>
-										<button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
-									</div>
-									<div class="modal-body" id="mapErrorMsg">
-										<p class="text-[15px] font-semibold mb-2">Si OpenLayers no puede encontrar su tienda con la dirección proporcionada, considera los siguientes consejos para mejorar la búsqueda:</p>
-										<hr>
-										<ul class="mb-3 text-sm list-disc px-3 my-3 space-y-1">
-											<li><i class="font-semibold">Prueba con una dirección cercana o el nombre del establecimiento (ej. El nombre de un centro comercial, si esta se encuentra dentro)</i> si la dirección exacta no está disponible o si no se puede encontrar en OpenLayers Maps. Puede proporcionar una <strong>ubicación aproximada</strong> que sea útil para los usuarios.</li>
-											<li>Verifica que la dirección ingresada esté completa y sin abreviaciones. Evita usar códigos postales y asegúrate de que cada parte de la dirección esté correctamente especificado.</li>
-											<li>Sé consistente en la forma en que ingresas la dirección. Utiliza el mismo formato y estilo cada vez que realices una búsqueda para obtener resultados más precisos.</li>
-											<li>Utiliza herramientas externas como Google Maps para verificar la dirección y obtener más detalles sobre su exactitud.</li>
-										</ul>
+                <!-- MAP SECTION HERE -->
+                <div id="map" style="width: 100%; height: 300px; margin-top: 10px;"></div>
 
-										<a href="#" class="btn bg-primary px-3 py-2 text-white font-semibold rounded float-end" target="_blank" id="gmapBtn">Ir a Google Maps</a>
-									</div>
-								</div>
-							</div>
-						</div>
+                <p class="px-3 py-2 rounded border inline-block w-auto">Al ingresar una ubicación que coincida con el
+                    resultado deseado, se obtendrán las coordenadas exactas para ubicar el marcador de la tienda en el
+                    mapa de inicio.</p>
 
-					</div>
+                <div id="popup" class="ol-popup">
+                    <a id="popup-closer" class="ol-popup-closer" href="#"></a>
+                    <div id="popup-content"></div>
+                </div>
+                <div class="modal fade" id="mapError" tabindex="-1" aria-labelledby="mapErrorLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header bg-primary text-white">
+                                <h5 class="modal-title text-xl font-semibold" id="mapErrorLabel">Resultado no encontrado
+                                </h5>
+                                <button type="button" class="btn-close text-white" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" id="mapErrorMsg">
+                                <p class="text-[15px] font-semibold mb-2">Si OpenLayers no puede encontrar su tienda con
+                                    la dirección proporcionada, considera los siguientes consejos para mejorar la
+                                    búsqueda:</p>
+                                <hr>
+                                <ul class="mb-3 text-sm list-disc px-3 my-3 space-y-1">
+                                    <li><i class="font-semibold">Prueba con una dirección cercana o el nombre del
+                                            establecimiento (ej. El nombre de un centro comercial, si esta se encuentra
+                                            dentro)</i> si la dirección exacta no está disponible o si no se puede
+                                        encontrar en OpenLayers Maps. Puede proporcionar una <strong>ubicación
+                                            aproximada</strong> que sea útil para los usuarios.</li>
+                                    <li>Verifica que la dirección ingresada esté completa y sin abreviaciones. Evita
+                                        usar códigos postales y asegúrate de que cada parte de la dirección esté
+                                        correctamente especificado.</li>
+                                    <li>Sé consistente en la forma en que ingresas la dirección. Utiliza el mismo
+                                        formato y estilo cada vez que realices una búsqueda para obtener resultados más
+                                        precisos.</li>
+                                    <li>Utiliza herramientas externas como Google Maps para verificar la dirección y
+                                        obtener más detalles sobre su exactitud.</li>
+                                </ul>
 
-					<!-- STORES LIST SECTION -->
-					<div class="w-full md:px-4 col-span-1 sm:col-span-3 md:col-span-3 mb-5">
-						<h3 class="text-xl mb-3 font-bold font-mono">Lista de puntos de interes</h3>
+                                <a href="#" class="btn bg-primary px-3 py-2 text-white font-semibold rounded float-end"
+                                    target="_blank" id="gmapBtn">Ir a Google Maps</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="grid grid-cols-1 md:grid-cols-5 gap-2">
+                    <input class="col-span-1 md:col-span-4 py-1" type="text" id="street"
+                        placeholder="Ingresa la dirección o calle" value="Av. Santa Fe 2349, CABA" />
+                    <button id="search-button"
+                        class="col-span-1 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded font-bold uppercase">Buscar</button>
+                    <p id="showStreet" class="mt-3 col-span-1 md:col-span-5"></p>
+                </div> -->
+            </div>
 
-						<div id="storesList" class="max-h-[400px] h-full relative">
-							<span id="storesEmpty" class="hidden text-3xl font-bold uppercase text-gray-300 text-center absolute left-2/4 top-2/4 w-full" style="transform: translate(-50%, -50%);"></span>
-							<ul id="store-items" class="store-items border p-2 box-border min-h-[400px]">
-							</ul>
-							<?php
+            <!-- STORES LIST SECTION -->
+            <div class="w-full md:px-4 col-span-1 sm:col-span-3 md:col-span-3 mb-5">
+                <h3 class="text-xl mb-3 font-bold font-mono">Lista de puntos de interes</h3>
+
+                <div id="storesList" class="max-h-[400px] h-full relative">
+                    <span id="storesEmpty"
+                        class="hidden text-3xl font-bold uppercase text-gray-300 text-center absolute left-2/4 top-2/4 w-full"
+                        style="transform: translate(-50%, -50%);"></span>
+                    <ul id="store-items" class="store-items border p-2 box-border min-h-[400px]">
+                    </ul>
+                    <?php
 							$this->spsm_store_handle_modal();
 							?>
-						</div>
-					</div>
+                </div>
+            </div>
 
-					<!-- FORM STORES SECTION -->
-					<div class=" w-full md:px-4 col-span-1 sm:col-span-3 md:col-span-3">
-						<h3 class="text-xl mb-3 font-bold font-mono">Crear nuevo punto de interes</h3>
-						<?php
+            <!-- FORM STORES SECTION -->
+            <div class=" w-full md:px-4 col-span-1 sm:col-span-3 md:col-span-3">
+                <h3 class="text-xl mb-3 font-bold font-mono">Crear nuevo punto de interes</h3>
+                <?php
 						$this->spsm_create_stores_form();
 						?>
-					</div>
-				</div>
+            </div>
+        </div>
 
-			</div>
+    </div>
 
-		</div>
-	<?php
+</div>
+<?php
 	}
 
 	public function spsm_store_handle_modal()
 	{
 	?>
-		<div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="storeTitleMd" aria-hidden="true">
-			<div class=" modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h1 class="modal-title fs-5" id="storeTitleMd"></h1>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-					</div>
-					<div class="modal-body" id="storeContentMd">
-						<div class=""></div>
-					</div>
-				</div>
-			</div>
-		</div>
-	<?php
+<div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="storeTitleMd" aria-hidden="true">
+    <div class=" modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="storeTitleMd"></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="storeContentMd">
+                <div class=""></div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php
 	}
 
 	public function spsm_create_stores_form()
 	{
 	?>
 
-		<?php
+<?php
 		$localidades = $this->query_class->get_all_localidades();
 
 		?>
-		<form class="p-4 border rounded" id="crearPuntoForm">
+<form class="p-4 border rounded" id="crearPuntoForm">
 
-			<fieldset class="grid grid-cols-2 items-center gap-x-3 gap-y-3">
-				<h4 class="col-span-2 text-xl pb-2 mb-3 border-b-4 border-sky-500 text-sky-500 font-bold font-mono">Configuración del punto de interes</h4>
+    <fieldset class="grid grid-cols-2 items-center gap-x-3 gap-y-3">
+        <h4 class="col-span-2 text-xl pb-2 mb-3 border-b-4 border-sky-500 text-sky-500 font-bold font-mono">
+            Configuración del punto de interes</h4>
 
-				<div class="">
-					<label for="local" class="uppercase font-semibold text-gray-500 mb-2">Elegir local</label>
-					<select class="w-full" name="local" id="local" required><!--                      store -->
-						<option value="">-- Seleccionar local --</option>
-						<option value="Cambio Baires">Cambio Baires</option>
-						<option value="Dolar Ok">Dolar Ok</option>
-						<option value="Voy y Vuelvo">Voy y vuelvo</option>
-					</select>
-				</div>
+        <div class="">
+            <label for="local" class="uppercase font-semibold text-gray-500 mb-2">Elegir local</label>
+            <select class="w-full" name="local" id="local" required>
+                <!--                      store -->
+                <option value="">-- Seleccionar local --</option>
+                <option value="Cambio Baires">Cambio Baires</option>
+                <option value="Dolar Ok">Dolar Ok</option>
+                <option value="Voy y Vuelvo">Voy y vuelvo</option>
+            </select>
+        </div>
 
-				<div class="relative" >
-					<label for="tiendaNombre" class="uppercase font-semibold text-gray-500 mb-2">Nombre</label>
-					<a class="font-normal italic absolute top-1 right-1 text-white text-base lowercase bg-sky-500 px-[10px] rounded-full cursor-pointer" tabindex="0" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="right" data-bs-content="Elige el nombre con el que se mostrara este punto de interes.">i</a>
-					<input class="w-full" type="text" name="tienda_nombre" id="tiendaNombre" placeholder="Ej. Punto de Gral Pacheco" required><!-- tienda_nombre -->
-				</div>
+        <div class="relative">
+            <label for="tiendaNombre" class="uppercase font-semibold text-gray-500 mb-2">Nombre</label>
+            <a class="font-normal italic absolute top-1 right-1 text-white text-base lowercase bg-sky-500 px-[10px] rounded-full cursor-pointer"
+                tabindex="0" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="focus"
+                data-bs-placement="right"
+                data-bs-content="Elige el nombre con el que se mostrara este punto de interes.">i</a>
+            <input class="w-full" type="text" name="tienda_nombre" id="tiendaNombre"
+                placeholder="Ej. Punto de Gral Pacheco" required><!-- tienda_nombre -->
+        </div>
 
-				<div class="col-span-2">
-					<label for="direccion" class="uppercase font-semibold block text-gray-500 mb-2">Dirección <a class="font-normal italic text-white text-base lowercase bg-sky-500  px-[10px] rounded-full float-end cursor-pointer" tabindex="0" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content="La dirección, a diferencia de la latitud y la longitud, es únicamente informativa para el usuario y puedes cargarla manualmente en este campo o buscando en el mapa.">i</a></label>
-					<input class="w-full" type="text" name="direccion" id="direccion" placeholder="Ingresar dirección manualmente" required><!-- direccion -->
-				</div>
+        <div class="col-span-2">
+            <label for="direccion" class="uppercase font-semibold block text-gray-500 mb-2">Dirección <a
+                    class="font-normal italic text-white text-base lowercase bg-sky-500  px-[10px] rounded-full float-end cursor-pointer"
+                    tabindex="0" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top"
+                    data-bs-content="La dirección, a diferencia de la latitud y la longitud, es únicamente informativa para el usuario y puedes cargarla manualmente en este campo o buscando en el mapa.">i</a></label>
+            <input class="w-full" type="text" name="direccion" id="direccion"
+                placeholder="Ingresar dirección manualmente" required><!-- direccion -->
+        </div>
 
-				<div class="col-span-2 md:col-span-1">
-					<label for="localidad" class="uppercase font-semibold block text-gray-500 mb-2">Localidad</label>
-					<!-- <input class="w-full" type="text" name="localidad" id="localidad" placeholder="Ingresar localidad" required> -->
-					<select name="localidad" id="localidad" class="w-full" required>
-						<option></option>
-						<?php
+        <div class="col-span-2 md:col-span-1">
+            <label for="localidad" class="uppercase font-semibold block text-gray-500 mb-2">Localidad</label>
+            <!-- <input class="w-full" type="text" name="localidad" id="localidad" placeholder="Ingresar localidad" required> -->
+            <select name="localidad" id="localidad" class="w-full" required>
+                <option></option>
+                <?php
 						foreach ($localidades as $localidad) {
 							if (!empty($localidad)) {
 								$localidad = $localidad['localidad'];
@@ -311,58 +350,71 @@ class Spsm_Plugin_Admin
 							}
 						}
 						?>
-					</select>
+            </select>
 
-				</div>
+        </div>
 
-				<div class="col-span-2 md:col-span-1">
-					<label for="zona" class="uppercase font-semibold block text-gray-500 mb-2">Zona del punto</label>
-					<select class="w-full" name="zona" id="zona" required><!--                      zona -->
-						<option>-- Seleccionar zona --</option>
-						<option value="caba">CABA</option>
-						<option value="zona-norte">ZONA NORTE</option>
-						<option value="zona-oeste">ZONA OESTE</option>
-						<option value="zona-sur">ZONA SUR</option>
-						<option value="interior-norte">Interior Norte</option>
-						<option value="interior-sur">Interior Sur</option>
-					</select>
-				</div>
+        <div class="col-span-2 md:col-span-1">
+            <label for="zona" class="uppercase font-semibold block text-gray-500 mb-2">Zona del punto</label>
+            <select class="w-full" name="zona" id="zona" required>
+                <!--                      zona -->
+                <option>-- Seleccionar zona --</option>
+                <option value="caba">CABA</option>
+                <option value="zona-norte">ZONA NORTE</option>
+                <option value="zona-oeste">ZONA OESTE</option>
+                <option value="zona-sur">ZONA SUR</option>
+                <option value="interior-norte">Interior Norte</option>
+                <option value="interior-sur">Interior Sur</option>
+            </select>
+        </div>
 
-				<div class="col-span-2">
-					<label for="tiendaInfo" class="uppercase font-semibold block text-gray-500 mb-2">Descripción de la tienda</label>
-					<p class="text-gray-400 text-sm mb-3">Esta descripción será visualizada para los usuario, no pasar información sensible </p>
-					<?php
+        <div class="col-span-2">
+            <label for="tiendaInfo" class="uppercase font-semibold block text-gray-500 mb-2">Descripción de la
+                tienda</label>
+            <p class="text-gray-400 text-sm mb-3">Esta descripción será visualizada para los usuario, no pasar
+                información sensible </p>
+            <?php
 					$html = "<strong>Horario</strong>\n\n<strong>Lunes a Viernes de</strong> 9:00 a 18:00 hs. <strong>Sábado de</strong> 10:00 a 13:00 hs. <strong>Feriados</strong> 09:00 a 16:00 hs.";
 
 					$this->spsm_wp_editor($html, 'tiendaDescripcion', 'descripcion');
 					?>
-				</div>
-			</fieldset>
+        </div>
+    </fieldset>
 
-			<hr class="my-3 px-2">
+    <hr class="my-3 px-2">
 
-			<fieldset class="grid grid-cols-2 gap-3">
-				<div class="col-span-2 relative">
-					<h4 class="col-span-2 pb-2 text-xl mb-3 border-b-4 border-sky-500 text-sky-500 font-bold font-mono">Configuración del Marcador</h4>
-					<a class="font-normal italic absolute top-1 right-1 text-white text-base lowercase bg-sky-500 px-[10px] rounded-full cursor-pointer" tabindex="0" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="right" data-bs-content="Puedes obtener la longitud y la latitud de un punto desde el mapa, buscando la dirección de la tienda o ingresando manualmente sus coordenadas si las conoces.">i</a>
-				</div>
+    <fieldset class="grid grid-cols-2 gap-3">
+        <div class="col-span-2 relative">
+            <h4 class="col-span-2 pb-2 text-xl mb-3 border-b-4 border-sky-500 text-sky-500 font-bold font-mono">
+                Configuración del Marcador</h4>
+            <a class="font-normal italic absolute top-1 right-1 text-white text-base lowercase bg-sky-500 px-[10px] rounded-full cursor-pointer"
+                tabindex="0" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="focus"
+                data-bs-placement="right"
+                data-bs-content="Puedes obtener la longitud y la latitud de un punto desde el mapa, buscando la dirección de la tienda o ingresando manualmente sus coordenadas si las conoces.">i</a>
+        </div>
 
-				<div class="">
-					<label for="lat" class="uppercase font-semibold mb-2 block text-gray-500">Latitud</label>
-					<input class="w-full" type="text" name="lat" id="lat" placeholder="Ej. -3334445" required><!--                      lat -->
-				</div>
+        <div class="">
+            <label for="lat" class="uppercase font-semibold mb-2 block text-gray-500">Latitud</label>
+            <input class="w-full" type="text" name="lat" id="lat" placeholder="Ej. -3334445" required>
+            <!--                      lat -->
+        </div>
 
-				<div>
-					<label for="lng" class="uppercase font-semibold mb-2 block text-gray-500">Longitud</label>
-					<input class="w-full" type="text" name="lng" id="lng" placeholder="Ej. -55554443" required><!--                      lng -->
-				</div>
+        <div>
+            <label for="lng" class="uppercase font-semibold mb-2 block text-gray-500">Longitud</label>
+            <input class="w-full" type="text" name="lng" id="lng" placeholder="Ej. -55554443" required>
+            <!--                      lng -->
+        </div>
 
-				<div class="col-span-2 relative ">
-					<label for="gmaps" class="uppercase font-semibold mb-2 block text-gray-500">GMaps URL</label>
-					<a class="font-normal italic absolute top-1 right-1 text-white text-base lowercase bg-sky-500 px-[10px] rounded-full cursor-pointer" tabindex="0" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="top" data-bs-content="Buscar una dirección en el mapa agregará en este campo un enlace de google maps con sus coordenadas.">i</a>
-					<input class="w-full" type="text" name="gmaps" id="gmaps" placeholder="https://www.google.com.ar/maps/search/..." required><!--                      gmap -->
-				</div>
-				<!-- <div class="col-span-2">
+        <div class="col-span-2 relative ">
+            <label for="gmaps" class="uppercase font-semibold mb-2 block text-gray-500">GMaps URL</label>
+            <a class="font-normal italic absolute top-1 right-1 text-white text-base lowercase bg-sky-500 px-[10px] rounded-full cursor-pointer"
+                tabindex="0" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="focus"
+                data-bs-placement="top"
+                data-bs-content="Buscar una dirección en el mapa agregará en este campo un enlace de google maps con sus coordenadas.">i</a>
+            <input class="w-full" type="text" name="gmaps" id="gmaps"
+                placeholder="https://www.google.com.ar/maps/search/..." required><!--                      gmap -->
+        </div>
+        <!-- <div class="col-span-2">
 					<label for="popupInfo" class="uppercase font-semibold mb-2 block text-gray-500">Descripción dentro del popup</label>
 					<p class="text-gray-400 text-sm mb-3">Esta descripción será visualizada para los usuario, no pasar información sensible</p>
 					<div id="quillPopup" class="h-max min-h-20">
@@ -370,13 +422,15 @@ class Spsm_Plugin_Admin
 						<p><strong>Días: </strong>Lunes a Viernes y Finde cerrado</p>
 					</div>
 				</div> -->
-			</fieldset>
-			<div class="flex relative my-3 ">
-				<span class="absolute left-5 top-[5px] text-white" id="formSpinner"></span>
-				<input id="createSubmit" class="w-full px-4 py-2 text-center bg-sky-500 text-white font-bold text-xl rounded cursor-pointer hover:bg-sky-600" type="submit" value="CREAR PUNTO DE INTERES">
-			</div>
-		</form>
-	<?php
+    </fieldset>
+    <div class="flex relative my-3 ">
+        <span class="absolute left-5 top-[5px] text-white" id="formSpinner"></span>
+        <input id="createSubmit"
+            class="w-full px-4 py-2 text-center bg-sky-500 text-white font-bold text-xl rounded cursor-pointer hover:bg-sky-600"
+            type="submit" value="CREAR PUNTO DE INTERES">
+    </div>
+</form>
+<?php
 	}
 
 
@@ -396,22 +450,23 @@ class Spsm_Plugin_Admin
 	public function spsm_localidades_option_page()
 	{ ?>
 
-		<div class="grid grid-cols-1">
-			<h1 class="text-2xl font-bold my-5">Gestionar localidades de Store Maps</h1>
+<div class="grid grid-cols-1">
+    <h1 class="text-2xl font-bold my-5">Gestionar localidades de Store Maps</h1>
 
-			<div>
-				<h2 class="text-xl font-semibold">Agregar nuevas localidades</h2>
-				<form id="localidadesForm" method="POST" action="">
-					<label class="bg-gray-100 border rounded border-gray-500 my-3 p-2" for="localidades">Ingrese las localidades (una por línea):</label><br>
-					<textarea class="p-2" name="localidades" id="localidades" rows="15" cols="50" required></textarea><br><br>
-					<button type="submit" class="button button-primary">Insertar Localidades</button>
-				</form>
-			</div>
-			<!-- <div>
+    <div>
+        <h2 class="text-xl font-semibold">Agregar nuevas localidades</h2>
+        <form id="localidadesForm" method="POST" action="">
+            <label class="bg-gray-100 border rounded border-gray-500 my-3 p-2" for="localidades">Ingrese las localidades
+                (una por línea):</label><br>
+            <textarea class="p-2" name="localidades" id="localidades" rows="15" cols="50" required></textarea><br><br>
+            <button type="submit" class="button button-primary">Insertar Localidades</button>
+        </form>
+    </div>
+    <!-- <div>
 				<h2>Lista de localidades</h2>
 			</div> -->
-		</div>
-		<?php $this->spsm_localidades_form(); ?>
+</div>
+<?php $this->spsm_localidades_form(); ?>
 
 <?php
 	}

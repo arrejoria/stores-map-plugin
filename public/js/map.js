@@ -1,7 +1,10 @@
 ; (function ($) {
     $(document).ready(function () {
+        // Manejar la variable global
+        const spsm_stores_data = spsm_data.stores_data ? JSON.parse(spsm_data.stores_data) : [];
+        const public_path = spsm_data.path ? spsm_data.path : null
         const mapElement = $("#map")
-
+        console.log(public_path);
         if (!mapElement.length) {
             return
         }
@@ -21,21 +24,9 @@
             ],
             view: new ol.View({
                 center: ol.proj.fromLonLat([defaultLng, defaultLat]), // Coordenadas de Buenos Aires
-                zoom: 10
+                zoom: 6
             })
         })
-
-        // for (var i = 0; i < 10; i++) {
-        //     var element = document.createElement('div');
-        //     element.innerHTML = '<img src="https://cdn.mapmarker.io/api/v1/fa/stack?size=50&color=DC4C3F&icon=fa-microchip&hoffset=1" />';
-        //     var marker = new ol.Overlay({
-        //         position: [i, i],
-        //         positioning: 'center-center',
-        //         element: element,
-        //         stopEvent: false
-        //     });
-        //     map.addOverlay(marker);
-        // }
 
         ////////////////////////    CREAR MARCADOR/S START   ////////////////////////
         // Array para almacenar las coordenadas (lat, lng)
@@ -79,7 +70,6 @@
                 })
             })
         })
-
         $(document).on("click", ".tienda-btn", function () {
             const tiendaId = String($(this).data("id"))
 
@@ -98,7 +88,7 @@
 
                 // Mantener el mismo nivel de zoom
                 const currentZoom = map.getView().getZoom()
-                const newZoom = 12
+                const newZoom = 14
                 // Animar el movimiento del mapa
                 map.getView().animate({
                     center: projectedCoords, // Coordenadas de destino

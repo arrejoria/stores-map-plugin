@@ -1,35 +1,15 @@
 ; (function ($) {
 	"use strict"
-
-	/**
-	 * All of the code for your public-facing JavaScript source
-	 * should reside in this file.
-	 *
-	 * Note: It has been assumed you will write jQuery code here, so the
-	 * $ function reference has been prepared for usage within the scope
-	 * of this function.
-	 *
-	 * This enables you to define handlers, for when the DOM is ready:
-	 *
-	 * $(function() {
-	 *
-	 * });
-	 *
-	 * When the window is loaded:
-	 *
-	 * $( window ).load(function() {
-	 *
-	 * });
-	 *
-	 * ...and/or other possibilities.
-	 *
-	 * Ideally, it is not considered best practise to attach more than a
-	 * single DOM-ready or window-load handler for a particular page.
-	 * Although scripts in the WordPress core, Plugins and Themes may be
-	 * practising this, we should strive to set a better example in our own work.
-	 */
+	// const spsmEvent = new CustomEvent('storeDataLoaded', { detail: { stores: [...], localidades: [...] } });
+	// window.dispatchEvent(event);
 
 	$(document).ready(function () {
+		/**
+		 * !IMPORTANTE INICIALIZAR VARIABLE GLOBAL
+		 */
+		const spsm_stores_data = spsm_data.stores_data ? JSON.parse(spsm_data.stores_data) : [];
+		const spsm_localidades_data = spsm_data.localidades_data ? JSON.parse(spsm_data.localidades_data) : [];
+
 		// Codigo que se ejecuta al cargar la pagina
 		if (
 			(!spsm_stores_data && spsm_stores_data.length === 0) ||
@@ -58,33 +38,33 @@
 			let html = `<div class="relative border-l">
 							<h2 class="text-xl uppercase py-3 px-2 font-semibold bg-primary-color text-white">Más información: </h2>
 							<div class="info-content flex flex-col gap-3 py-3 px-2 text-sm">
-								<div class="grid grid-cols-2 gap-3 border-b pb-2">
-									<div class="flex flex-col col-span-1 mb-3">
+								<div class="grid md:grid-cols-2 gap-3 border-b pb-5 px-2">
+									<div class="flex flex-col col-span-1">
 										<h4 class="font-semibold">Dirección:</h4>
 										<p class="info-direccion">${store.direccion}</p>
 									</div>
-									<div class="flex justify-around gap-3">
+									<div class="flex gap-3 items-center justify-around">
 										<div>
 											<h4 class="font-semibold">Local:</h4>
 											<p class="info-direccion">${store.local}</p>
 										</div>
 
-										<div>
+										<div class="self-end md:self-center">
 											<h4 class="font-semibold">Localidad:</h4>
 											<p class="info-direccion capitalize">${store.localidad}</p>
 										</div>
 									</div>
 								</div>
-								<div class="flex max-md:flex-col gap-3 align-between justify-around">
-									<div class="mb-3">
-										<div class="flex flex-col gap-y-1">
+								<div class="flex max-md:flex-col items-start self-start gap-5 w-full justify-between">
+									<div class="flex flex-col gap-y-1 p-2">
 											${store.tienda_info}
-										</div>
 									</div>
-									<div class="flex md:flex-col items-center gap-2">
-										<h4 class="font-semibold mb-3">Ir a la ubicación:</h4>
-										<a href="${store.gmaps_url}" target="_blank" class="font-semibold self-end bg-sky-500 px-3 py-1 rounded text-white inline-block w-fit">Ir a Maps</a>
+									<div class="flex flex-col gap-y-1 p-2">
+										<h4 class="font-semibold">Ir a la ubicación:</h4>
+										<p>Ir a google maps para ver más indicaciones de transporte y nuestro local.</p>
+										<a href="${store.gmaps_url}" target="_blank" class="mt-5 font-semibold self-end bg-sky-500 px-3 py-1 rounded text-white inline-block w-fit">Ir a Maps</a>
 									</div>
+									
 								</div>
 							</div>
 							<a id="closeDescripcion" class="absolute top-2 right-2 text-white p-2 cursor-pointer">✖</a>
