@@ -62,6 +62,30 @@ class SPSM_DB_Queries
             return []; // Devuelve un array vacío si no hay resultados
         }
     }
+    
+    /**
+     * get_store_by_id
+     *
+     * @param  string $id Identificador de la sucursal
+     * @return void
+     */
+    public function get_store_by_id($id){
+        $table_name = $this->table_name_stores;
+
+        if(empty($id)){
+            return null;
+        }
+
+        $prepared_query = $this->wpdb->prepare("SELECT * FROM $table_name WHERE id = %s", $id);
+        $result = $this->wpdb->get_row($prepared_query, ARRAY_A);
+
+    
+        if($result){
+            return $result;
+        } else {
+            return [];
+        }
+    }
 
     // Método para eliminar un registro
     public function delete_store($id)

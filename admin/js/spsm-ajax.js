@@ -64,6 +64,39 @@
       });
     });
 
+    // Funcion AJAX para mostrar los datos de la sucursal seleccionada
+    $(document).on('click', '.show-store', function (e) {
+      console.log('click en show store');
+      var sucursalId = $(this).data('id')
+      $('#sucursalId').val(sucursalId);
+    })
+
+    // Funcion AJAX para mostrar los datos de la sucursal seleccionada
+    $(document).on('click', '#updateSucursalForm', function (e) {
+      console.log('click en update submit');
+      e.preventDefault();
+      const sucursalId = $('#sucursalId').val()
+
+      const data = {
+        action: 'spsm_get_store', // El nombre de la acción que vincula con el callback PHP
+        sucursal_id: sucursalId,
+        nonce: spsm_ajax_obj.nonce // Verificación de seguridad
+      }
+      
+
+      $.ajax({
+        url: spsm_ajax_obj.ajax_url,
+        type: 'POST',
+        data: data,
+        success: function(result){
+          console.log(result);
+        },
+        error: function(xhr, status, error){
+          console.error(error);
+        }
+      })
+    })
+
     // Funcion AJAX para eliminar puntos de interes del cliente y el servidor
     $(document).on('click', '.delete-btn', function (e) {
       console.log('del btn clicked');
@@ -104,7 +137,6 @@
         },
       });
     });
-    // $(document).on('click', '')
 
   })
 
@@ -129,6 +161,23 @@
     return html;
   }
 
+  function handle_update_sucursal(id, e) {
+    e.preventDefault()
+    const data = {
+      action: 'spsm_get_store', // El nombre de la acción que vincula con el callback PHP
+      sucursal_id: id,
+      nonce: spsm_ajax_obj.nonce // Verificación de seguridad
+    }
 
+    $.ajax({
+      url: spsm_ajax_obj.ajax_url,
+      type: 'POST',
+      data: data,
+      success: function (result) {
+        console.log(result);
+      }
+    })
+
+  }
 
 })(jQuery);

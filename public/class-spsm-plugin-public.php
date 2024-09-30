@@ -134,7 +134,7 @@ class Spsm_Plugin_Public
 	public function spsm_home_section_template()
 	{
 ?>
-		<div class="w-full px-2 smsp mb-[100px] space-y-3" id="mapContainer">
+		<div class="w-full px-2 spsm mb-[100px] space-y-3" id="mapContainer">
 			<h1 class="text-2xl font-semibold text-center mb-12 text-primary-color">Podes buscar las sucursales que tenemos por
 				tu zona:</h1>
 			<div class="stores-filter flex flex-col items-center justify-center gap-2 md:flex-row w-full md:max-w-full border rounded md:rounded-full md:gap-x-3 border-gray-400 py-3 px-1 md:px-5 mx-auto !mb-7 shadow"

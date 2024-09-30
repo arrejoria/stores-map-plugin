@@ -40,17 +40,17 @@
 							<div class="info-content flex flex-col gap-3 py-3 px-2 text-sm">
 								<div class="grid md:grid-cols-2 gap-3 border-b pb-5 px-2">
 									<div class="flex flex-col col-span-1">
-										<h4 class="font-semibold">Dirección:</h4>
+										<span class="font-semibold text-[16px]">Dirección:</span>
 										<p class="info-direccion">${store.direccion}</p>
 									</div>
-									<div class="flex gap-3 items-center justify-around">
+									<div class="flex gap-3 justify-around">
 										<div>
-											<h4 class="font-semibold">Local:</h4>
+											<span class="font-semibold text-[16px]">Local:</span>
 											<p class="info-direccion">${store.local}</p>
 										</div>
 
-										<div class="self-end md:self-center">
-											<h4 class="font-semibold">Localidad:</h4>
+										<div class="self-end md:self-start">
+											<span class="font-semibold text-[16px]">Localidad:</span>
 											<p class="info-direccion capitalize">${store.localidad}</p>
 										</div>
 									</div>
@@ -60,7 +60,7 @@
 											${store.tienda_info}
 									</div>
 									<div class="flex flex-col gap-y-1 p-2">
-										<h4 class="font-semibold">Ir a la ubicación:</h4>
+										<span class="font-semibold text-[16px]">Ir a la ubicación:</span>
 										<p>Ir a google maps para ver más indicaciones de transporte y nuestro local.</p>
 										<a href="${store.gmaps_url}" target="_blank" class="mt-5 font-semibold self-end bg-sky-500 px-3 py-1 rounded text-white inline-block w-fit">Ir a Maps</a>
 									</div>
@@ -73,7 +73,7 @@
 			$(".punto-descripcion").html(html)
 			$(".punto-descripcion")
 				.removeClass("hide-descripcion")
-				.addClass(["show-descripcion", "md:row-span-1"])
+				.addClass(["show-descripcion"])
 			$(".punto-mapa").removeClass("md:row-span-2")
 
 			$("html, body").animate({

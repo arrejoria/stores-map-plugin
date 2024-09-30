@@ -2,26 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+html {
+  scroll-behavior: smooth;
+}
 
 .ol-popup {
-    position: absolute;
-    background-color: white;
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    bottom: 12px;
-    left: -50px;
-    min-width: 280px;
-  }
-  
-  .ol-popup-closer {
-    text-decoration: none;
-    position: absolute;
-    top: 2px;
-    right: 8px;
-  }
-  
-  .ol-popup-closer:after {
-    content: '✖';
-  }
-  
+  position: absolute;
+  background-color: white;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  bottom: 12px;
+  left: -50px;
+  min-width: 280px;
+}
+
+.ol-popup-closer {
+  text-decoration: none;
+  position: absolute;
+  top: 2px;
+  right: 8px;
+}
+
+.ol-popup-closer:after {
+  content: '✖';
+}
+
+.ff-monts {
+  font-family: "Montserrat", system-ui;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.text-primary-color {
+  color: #21285a;
+}
+
+.text-primary-color-alt {
+  color: #00fff0;
+}
+
+.text-secondary-color {
+  color: #a600ff;
+}
+
+.text-adc-color {
+  color: #979797;
+}
+
+.bg-primary-color {
+  background-color: #21285a;
+}
+
+.bg-primary-color-alt {
+  background-color: #00fff0;
+}
+
+.bg-secondary-color {
+  background-color: #a600ff;
+}
+
+.bg-adc-color {
+  background-color: #a600ff;
+}
