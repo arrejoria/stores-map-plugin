@@ -29,14 +29,15 @@
 		load_sucursales(ALL_SUCURSALES)
 
 		// MOSTRAR INFO DE LA SUCURSAL AL HACER CLICK EN VER INFO
-		$(document).on("click", ".tienda-btn", function () {
-
+		$(document).on("click", ".sucursal", function () {
+			remove_active_sucursal_state();
+			$(this).addClass('active')
 			let sucursalId = String($(this).data("id")) // Convertir el ID a string
 			const store = ALL_SUCURSALES.find((store) => store.id === sucursalId)
 
 
 			let html = `<div class="relative border-l">
-							<h2 class="text-xl uppercase py-3 px-2 font-semibold bg-primary-color text-white">Más información: </h2>
+							<h2 class="text-xl uppercase py-3 px-2 font-semibold bg-secondary-color text-white">Más información: </h2>
 							<div class="info-content flex flex-col gap-3 py-3 px-2 text-sm">
 								<div class="grid md:grid-cols-2 gap-3 border-b pb-5 px-2">
 									<div class="flex flex-col col-span-1">
@@ -61,13 +62,13 @@
 									</div>
 									<div class="flex flex-col gap-y-1 p-2">
 										<span class="font-semibold text-[16px]">Ir a la ubicación:</span>
-										<p>Ir a google maps para ver más indicaciones de transporte y nuestro local.</p>
-										<a href="${store.gmaps_url}" target="_blank" class="mt-5 font-semibold self-end bg-sky-500 px-3 py-1 rounded text-white inline-block w-fit">Ir a Maps</a>
+										<p>Podes visitar nuestra sucursal en google maps para obtener más información sobre como llegar</p>
+										<a href="${store.gmaps_url}" target="_blank" class="mt-5 font-semibold self-end bg-secondary-color px-3 py-2 rounded !text-white inline-block w-fit">Ir a Maps</a>
 									</div>
 									
 								</div>
 							</div>
-							<a id="closeDescripcion" class="absolute top-2 right-2 text-white p-2 cursor-pointer">✖</a>
+							<a id="closeDescripcion" class="absolute top-2 right-2 !text-white p-2 cursor-pointer">✖</a>
 						</div>`
 
 			$(".punto-descripcion").html(html)
@@ -82,6 +83,7 @@
 
 		})
 		$(document).on("click", "#closeDescripcion", function () {
+			remove_active_sucursal_state()
 			$(".punto-descripcion")
 				.addClass("hide-descripcion")
 				.removeClass(["show-descripcion", "md:row-span-1"])
@@ -96,7 +98,7 @@
 			active_scroll_img()
 		}
 		// Ocultar Scroll Gif al realizar scroll en las sucursales
-		$(".lista-tiendas").on("scroll", function () {
+		$(".lista-sucursales").on("scroll", function () {
 			hide_scroll_img()
 		})
 		// Mostrar Scroll Gif
@@ -234,14 +236,15 @@
 				} = store
 
 				// Crear el HTML para cada sucursal
-				let html = `<li class="grid grid-cols-4 items-center gap-1 py-3 px-1 bg-white rounded">
-                        <div class="col-span-3 flex gap-2 items-center">
-                            <span class="dashicons dashicons-store text-sm"></span>
-                            <h3 class="">${tienda_nombre}</h3>
+				let html = `<li data-id="${id}" class="sucursal grid grid-cols-4 items-center gap-1 py-3 px-1 bg-white border-b-2 border-color-secondary hover:bg-gray-100">
+                        <div class="col-span-3 flex flex-col gap-2">
+                            <h3 class="text-[16px] ff-gotham-bold font-bold uppercase">${tienda_nombre}</h3>
+							<p class="item-direccion text-sm">${direccion}</p>
+							<p class="item-local text-sm italic text-gray-400">${local}</p>
                         </div>
-                        <button data-id="${id}" class="tienda-btn col-span-1 border rounded bg-primary-color text-white p-1 text-center">Ver info</button>
+                       <button class="sucursal-btn col-span-1 text-color-primary p-1 text-center max-h-[40px]" ><span class="dashicons dashicons-arrow-right-alt2"></span></button >
                     </li>`
-
+				// 
 				// Insertar el HTML en la lista de tiendas
 				tiendaListElm.append(html)
 			})
@@ -297,6 +300,14 @@
 			})
 		}
 
-
+		function remove_active_sucursal_state() {
+			const sucursales = $('.sucursal');
+			$.each(sucursales, function (i, item) {
+				const $item = $(item);
+				if ($item.hasClass('active')) {
+					$item.removeClass('active');
+				}
+			})
+		}
 	})
 })(jQuery)

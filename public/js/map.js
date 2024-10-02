@@ -1,20 +1,18 @@
 ; (function ($) {
     $(document).ready(function () {
-        // Manejar la variable global
         const spsm_stores_data = spsm_data.stores_data ? JSON.parse(spsm_data.stores_data) : [];
         const public_path = spsm_data.path ? spsm_data.path : null
+        const map_marker_icon = spsm_data.marker_icon[0]
+        const map_marker_icon_alt = spsm_data.marker_icon[1]
         const mapElement = $("#map")
-        console.log(public_path);
         if (!mapElement.length) {
             return
         }
 
-        console.log("map inicializado")
-        // Inicializar el mapa de OpenLayers en Buenos Aires, Argentina
-        const defaultLat = -34.6073387 // Latitud de Buenos Aires
-        const defaultLng = -58.4432852 // Longitud de Buenos Aires
+        // Inicializar el mapa
+        const defaultLat = -34.6073387
+        const defaultLng = -58.4432852
 
-        ////////////////////////    INIT MAPA START   ////////////////////////
         var map = new ol.Map({
             target: "map",
             layers: [
@@ -23,84 +21,93 @@
                 })
             ],
             view: new ol.View({
-                center: ol.proj.fromLonLat([defaultLng, defaultLat]), // Coordenadas de Buenos Aires
+                center: ol.proj.fromLonLat([defaultLng, defaultLat]),
                 zoom: 6
             })
         })
 
-        ////////////////////////    CREAR MARCADOR/S START   ////////////////////////
-        // Array para almacenar las coordenadas (lat, lng)
-        var coordenadas = []
+        //////////////////////// CREAR MARCADORES ////////////////////////
+        let features = [];
 
-        // Supongamos que 'spsm_stores_data' es el array con los datos de las tiendas
         if (spsm_stores_data) {
             $.each(spsm_stores_data, function (i, data) {
-                // Asegúrate de que las propiedades 'latitud' y 'longitud' existen
                 if (data.latitud && data.longitud) {
-                    coordenadas.push([data.longitud, data.latitud]) // Se usa [lng, lat] para OpenLayers
+                    const marker = new ol.Feature({
+                        geometry: new ol.geom.Point(ol.proj.fromLonLat([data.longitud, data.latitud]))
+                    });
+                    features.push(marker);
                 }
             })
         }
 
-        // Crear un array vacío para las características de los marcadores
-        let features = []
-
-        // Recorrer el array de coordenadas y crear un marcador para cada tienda
-        $.each(coordenadas, function (i, coordenada) {
-            const marker = new ol.Feature({
-                geometry: new ol.geom.Point(ol.proj.fromLonLat(coordenada)) // Convertir a proyección
-            })
-
-            features.push(marker) // Añadir el marcador al array de características
-        })
-
-        // Crear la fuente de los marcadores con las características
         var markerSource = new ol.source.Vector({
-            features: features // Usar todas las características
+            features: features
         })
 
-        // Crear la capa de los marcadores
-        var markerLayer = new ol.layer.Vector({
-            source: markerSource,
-            style: new ol.style.Style({
-                image: new ol.style.Icon({
-                    anchor: [0.5, 1],
-                    src: "https://cdn-icons-png.flaticon.com/512/684/684908.png", // Icono del marcador
-                    scale: 0.07 // Tamaño del ícono
-                })
+        var normalMarkerStyle = new ol.style.Style({
+            image: new ol.style.Icon({
+                anchor: [0.5, 1],
+                src: map_marker_icon,
+                scale: 0.07
             })
-        })
-        $(document).on("click", ".tienda-btn", function () {
-            const tiendaId = String($(this).data("id"))
+        });
 
-            // Asegúrate de que los datos de tiendas están correctamente disponibles
-            console.log(spsm_stores_data)
+        var hoverStyle = new ol.style.Style({
+            image: new ol.style.Icon({
+                anchor: [0.5, 1],
+                src: map_marker_icon_alt,
+                scale: 0.04
+            })
+        });
 
-            // Busca la tienda por su id
-            const tiendaData = spsm_stores_data.find((store) => store.id === tiendaId)
+        var vectorLayer = new ol.layer.Vector({
+            source: markerSource,
+            style: normalMarkerStyle
+        });
+
+        let selectedMarker = null;
+
+        // Listener de click en una sucursal
+        $(document).on("click", ".sucursal", function () {
+            const tiendaId = String($(this).data("id"));
+            const tiendaData = spsm_stores_data.find((store) => store.id === tiendaId);
 
             if (tiendaData) {
-                // Extrae las coordenadas de latitud y longitud
-                const tiendaCoords = [tiendaData.longitud, tiendaData.latitud]
+                const tiendaCoords = [tiendaData.longitud, tiendaData.latitud];
+                const projectedCoords = ol.proj.fromLonLat(tiendaCoords);
+                const newZoom = 14;
 
-                // Transformar las coordenadas a la proyección correcta
-                const projectedCoords = ol.proj.fromLonLat(tiendaCoords)
-
-                // Mantener el mismo nivel de zoom
-                const currentZoom = map.getView().getZoom()
-                const newZoom = 14
-                // Animar el movimiento del mapa
                 map.getView().animate({
-                    center: projectedCoords, // Coordenadas de destino
-                    zoom: newZoom, // Mantener el zoom actual
-                    duration: 1000 // Duración de la animación en milisegundos
-                })
-            } else {
-                console.log("No se encontró la tienda con el ID:", tiendaId)
+                    center: projectedCoords,
+                    zoom: newZoom,
+                    duration: 1000
+                });
+
+                if (selectedMarker) {
+                    selectedMarker.setStyle(normalMarkerStyle);
+                }
+
+                // Encontrar el marcador actual
+                const currentMarker = vectorLayer.getSource().getFeatures().find(feature => {
+                    const coords = feature.getGeometry().getCoordinates();
+                    return coords[0] === projectedCoords[0] && coords[1] === projectedCoords[1];
+                });
+
+                if (currentMarker) {
+                    currentMarker.setStyle(hoverStyle); // Aplicar estilo de selección
+                    selectedMarker = currentMarker; // Guardar referencia al marcador seleccionado
+                }
+            }
+        });
+
+        $(document).on('click', '#closeDescripcion', function () {
+            // Verificar si hay un marcador seleccionado y restaurar su estilo normal
+            if (selectedMarker) {
+                selectedMarker.setStyle(normalMarkerStyle); // Restablecer el estilo del marcador seleccionado
+                selectedMarker = null; // Limpiar la referencia del marcador seleccionado
             }
         })
 
-        // Agregar la capa de marcadores al mapa
-        map.addLayer(markerLayer)
+        map.addLayer(vectorLayer);
     })
-})(jQuery)
+})(jQuery);

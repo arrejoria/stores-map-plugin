@@ -70,7 +70,8 @@ class Spsm_Plugin_Public
 	{
 
 		wp_enqueue_style('openlayers-style', 'https://cdn.jsdelivr.net/npm/ol@v10.1.0/ol.css', array(), null, 'all');
-		wp_enqueue_style('select2-theme',  plugin_dir_url(__FILE__) .  'css/select2-bootstrap-5-theme.min.css', array(), null, 'all');
+		wp_enqueue_style('normalize', plugin_dir_url(__FILE__) . 'css/normalize.css', array(), null, 'all');
+		// wp_enqueue_style('select2-theme',  plugin_dir_url(__FILE__) .  'css/select2-bootstrap-5-theme.min.css', array(), null, 'all');
 		wp_enqueue_style('select2-min',  plugin_dir_url(__FILE__) .  'css/select2.min.css', array(), null, 'all');
 		wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/spsm-plugin-public.css', array(), $this->version, 'all');
 	}
@@ -101,11 +102,11 @@ class Spsm_Plugin_Public
 	public function spsm_stores_localize_scripts()
 	{
 
-		// Obtén todas las tiendas y localidades
+		// Obtén todas las sucursales y localidades
 		$stores = $this->query_class->get_all_stores();
 		$localidades = $this->query_class->get_all_localidades();
 
-		// Si no hay tiendas, indicarlo
+		// Si no hay sucursales, indicarlo
 		if (empty($stores)) {
 			$stores = [];
 			$localidades = [];
@@ -114,9 +115,18 @@ class Spsm_Plugin_Public
 			$stores_empty = false;
 		}
 
+
+		$icon_path = "assets/images/map-marker.png";
+		$alt_icon_path = "assets/images/map-marker-alt.png";
+		// Ruta a https://starpay.local/wp-content/plugins/spsm-plugin/public/assets/images/map-marker.png
+		$map_marker_icon = $this->verificar_map_marker_image_exist($icon_path);
+		$map_marker_icon_alt = $this->verificar_map_marker_image_exist($alt_icon_path);
+
+		$map_markers = array($map_marker_icon, $map_marker_icon_alt);
 		// Localizar los datos para pasarlos a JavaScript
 		wp_localize_script($this->plugin_name, 'spsm_data', array(
 			'path' => plugin_dir_url(__FILE__),
+			'marker_icon' =>  $map_markers,
 			'stores_empty' => $stores_empty,
 			'stores_data' => json_encode($stores),
 			'localidades_data' => json_encode($localidades),
@@ -135,8 +145,6 @@ class Spsm_Plugin_Public
 	{
 ?>
 		<div class="w-full px-2 spsm mb-[100px] space-y-3" id="mapContainer">
-			<h1 class="text-2xl font-semibold text-center mb-12 text-primary-color">Podes buscar las sucursales que tenemos por
-				tu zona:</h1>
 			<div class="stores-filter flex flex-col items-center justify-center gap-2 md:flex-row w-full md:max-w-full border rounded md:rounded-full md:gap-x-3 border-gray-400 py-3 px-1 md:px-5 mx-auto !mb-7 shadow"
 				id="storesFilters">
 				<div class="w-full md:w-1/5">
@@ -161,7 +169,7 @@ class Spsm_Plugin_Public
 					</select>
 				</div>
 
-				<div class="w-full md:w-1/5">
+				<div class="w-full md:w-1/4">
 					<select class="form-select " aria-label="Default select example" name="localidades" id="localidad">
 						<option></option>
 					</select>
@@ -169,28 +177,47 @@ class Spsm_Plugin_Public
 
 				<div class="flex w-full md:w-1/4 relative text-sm gap-3">
 					<button id="filterBtn"
-						class="btn btn-small col-span-1 bg-primary-color text-white rounded w-full py-1 uppercase font-bold">Buscar</button>
+						class="btn btn-small col-span-1 bg-secondary-color text-white rounded w-full py-2 uppercase font-bold active:brightness-90">Buscar</button>
 					<button id="resetBtn"
-						class="btn btn-small col-span-1 bg-gray-300 text-white rounded w-full py-1 uppercase font-bold">Reiniciar</button>
+						class="btn btn-small col-span-1 bg-gray-300 text-white rounded w-full py-2 uppercase font-bold active:brightness-90">Reiniciar</button>
 					<span
 						class="results-msg py-3 px-2 bg-white bottom-[-55px] border  rounded shadow-sm shadow-white text-center right-0 absolute z-10 text-nowrap text-sm font-semibold text-red-500 hide-noresults"
 						id="noResults">No se encontraron resultados</span>
 				</div>
 			</div>
-			<div class="grid grid-cols-1 md:grid-cols-7 xl:grid-cols-12 w-full md:border gap-y-3 shadow-md">
-				<div class="stores-content col-span-1 md:col-span-3 xl:col-span-4 relative border">
-					<h2 class="text-xl uppercase col-span-6 py-3 px-2 font-semibold bg-primary-color text-white">Sucursales</h2>
-					<ul class="lista-tiendas p-2 max-sm:max-h-[300px] max-h-[500px] scrollbar space-y-3" id="sucursales">
+			<div class="grid grid-cols-1 md:grid-cols-7 xl:grid-cols-12 w-full md:border gap-y-3">
+				<div class="stores-content col-span-1 md:col-span-3 xl:col-span-4 relative border-l border-b shadow-md">
+					<h2
+						class="text-xl uppercase col-span-6 py-3 px-2 font-semibold bg-secondary-color text-white ff-gotham-bold">
+						Sucursales
+					</h2>
+					<ul class="lista-sucursales p-2 max-sm:max-h-[300px] max-h-[500px] scrollbar space-y-3" id="sucursales">
 					</ul>
 					<img class="scrollbar-i" src="<?= esc_attr(plugin_dir_url(__FILE__) . 'assets/images/scroll-down1.gif'); ?>"
-						alt="scrolldown lista de tiendas icon" width="100" height="80">
+						alt="scrolldown lista de sucursales icon" width="100" height="80">
 				</div>
-				<div class="flex flex-col  md:col-span-4 xl:col-span-8 max-md:min-h-[400px] h-full">
+				<div
+					class="flex flex-col  md:col-span-4 xl:col-span-8 max-md:min-h-[400px] h-full border border-t-0 border-color-secondary shadow-md">
 					<div class="punto-descripcion min-h-fit" id="storeInfo"></div>
 					<div class="punto-mapa md:h-fit flex-1 h-full min-h-[200px]" id="map"></div>
 				</div>
 			</div>
 		</div>
 <?php
+	}
+
+
+	public function verificar_map_marker_image_exist($icon_url)
+	{
+		// Convierte la URL en una ruta del sistema de archivos
+		$icon_path = plugin_dir_path(__FILE__) . $icon_url;
+
+		// Verifica si el archivo existe en el servidor
+		if (file_exists($icon_path)) {
+			return plugin_dir_url(__FILE__) . $icon_url; // Devuelve la URL del archivo
+		} else {
+			// Si no existe, devolver una imagen predeterminada o un mensaje de error
+			return "https://cdn-icons-png.flaticon.com/512/684/684908.png";
+		}
 	}
 }

@@ -62,29 +62,60 @@ class SPSM_DB_Queries
             return []; // Devuelve un array vacío si no hay resultados
         }
     }
-    
+
     /**
      * get_store_by_id
      *
      * @param  string $id Identificador de la sucursal
      * @return void
      */
-    public function get_store_by_id($id){
+    public function get_store_by_id($id)
+    {
         $table_name = $this->table_name_stores;
 
-        if(empty($id)){
+        if (empty($id)) {
             return null;
         }
 
         $prepared_query = $this->wpdb->prepare("SELECT * FROM $table_name WHERE id = %s", $id);
         $result = $this->wpdb->get_row($prepared_query, ARRAY_A);
 
-    
-        if($result){
+
+        if ($result) {
             return $result;
         } else {
             return [];
         }
+    }
+
+
+    /**
+     * Actualiza una sucursal en la base de datos según su ID.
+     *
+     * @param int $sucursal_id ID de la sucursal a actualizar.
+     * @param array $data Datos a actualizar.
+     * @return bool|int False en caso de error, número de filas actualizadas en caso de éxito.
+     */
+    function update_store_by_id($sucursal_id, $data)
+    {
+        global $wpdb;
+
+        // Nombre de la tabla
+        $table = $wpdb->prefix . 'spsm_stores'; // Cambia 'spsm_stores' por el nombre real de tu tabla
+
+        // Asegúrate de que el ID sea un número entero
+        $sucursal_id = intval($sucursal_id);
+
+        // Actualizar los datos
+        $updated = $wpdb->update(
+            $table,
+            $data,
+            array('id' => $sucursal_id),
+            array('%s', '%s', '%s', '%s', '%s', '%s', '%f', '%f', '%s'), // Tipos de datos para los valores
+            array('%d') // Tipo de datos para el ID
+        );
+
+        return $updated; // Retorna el número de filas actualizadas o false si hubo un error
     }
 
     // Método para eliminar un registro
@@ -117,15 +148,17 @@ class SPSM_DB_Queries
         return null;
     }
 
-    public function get_all_localidades(){
+    public function get_all_localidades()
+    {
 
         $table = $this->table_name_localidades;
-        $prepare = $this->wpdb->prepare("SELECT localidad FROM $table ORDER BY localidad ASC");
-        $result = $this->wpdb->get_results($prepare, ARRAY_A);
-        
-        if($result){
-            return $result;
-        }else{
+        // Ejecutar la consulta sin usar prepare
+        $query = 'SELECT localidad FROM ' . $table . ' ORDER BY localidad ASC';
+        $results = $this->wpdb->get_results($query, ARRAY_A);
+
+        if ($results) {
+            return $results;
+        } else {
             return [];
         }
     }
@@ -136,13 +169,13 @@ class SPSM_DB_Queries
         if (empty($data)) {
             return false; // o manejar el error de alguna manera
         }
-    
+
         // Nombre de la tabla a usar
         $table = $this->table_name_localidades;
-    
+
         // Insertar los datos en la tabla y asegurar los tipos de datos
         $insert = $this->wpdb->insert($table, $data, array('%s')); // %s es para strings, ajustar según los tipos de datos
-    
+
         // Retornar la localidad insertada si se insertó con éxito
         if ($insert) {
             return $data['localidad']; // O ajusta según la clave que contiene la localidad

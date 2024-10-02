@@ -66,36 +66,120 @@
 
     // Funcion AJAX para mostrar los datos de la sucursal seleccionada
     $(document).on('click', '.show-store', function (e) {
-      console.log('click en show store');
-      var sucursalId = $(this).data('id')
-      $('#sucursalId').val(sucursalId);
-    })
+      if ($('.modal-backdrop').is(':visible')) {
+        $('body').removeClass('modal-open');
+        $('.modal-backdrop').remove();
+      };
 
-    // Funcion AJAX para mostrar los datos de la sucursal seleccionada
-    $(document).on('click', '#updateSucursalForm', function (e) {
-      console.log('click en update submit');
-      e.preventDefault();
-      const sucursalId = $('#sucursalId').val()
+      console.log('click en show store');
+      var sucursalId = $(this).data('id');
+      $('#sucursalId').val(sucursalId);
+      if (!$('#updateSucursalForm').hasClass('hidden')) {
+        $('#updateSucursalForm').addClass('hidden')
+      }
+
+      // Obtener el contenido de descripcion desde wp editor utilizando tinymce
+      // var tienda_descripcion = tinyMCE.get('updateTiendaDescripcion').getContent(); // Obtener el HTML del editor
 
       const data = {
         action: 'spsm_get_store', // El nombre de la acción que vincula con el callback PHP
         sucursal_id: sucursalId,
         nonce: spsm_ajax_obj.nonce // Verificación de seguridad
-      }
-      
+      };
 
       $.ajax({
         url: spsm_ajax_obj.ajax_url,
         type: 'POST',
         data: data,
-        success: function(result){
-          console.log(result);
+        beforeSend: function (e) {
+          $('#searchInfo').removeClass('hidden').html(`<span class="spinner-border"></span><p>Extrayendo datos de la sucursal</p>`)
         },
-        error: function(xhr, status, error){
-          console.error(error);
+        success: function (response) {
+          $('#searchInfo').addClass('hidden')
+          $('#updateSucursalForm').removeClass('hidden')
+          if (response.success) {
+            // Aquí se reciben los datos de la tienda (sucursal_data)
+            const sucursal = response.data.sucursal_data;
+
+            // Actualizar los campos del formulario con los datos de la sucursal
+            $('#updateLocal').val(sucursal.local);
+            $('#updateName').val(sucursal.tienda_nombre);
+            $('#updateDireccion').val(sucursal.direccion);
+            $('#updateLocalidad').val(sucursal.localidad);
+            $('#updateZona').val(sucursal.zona);
+            $('#updateLat').val(sucursal.latitud);
+            $('#updateLng').val(sucursal.longitud);
+            $('#updateGmaps').val(sucursal.gmaps_url);
+
+            // Actualizar el contenido del editor de TinyMCE con la descripción de la tienda
+            tinymce.get('updateTiendaDescripcion').setContent(sucursal.tienda_info);
+          } else {
+            console.error('No se encontraron datos de la sucursal.');
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error('Error al mostrar la información: ' + error);
         }
-      })
-    })
+      });
+    });
+
+
+    // Funcion AJAX para actualizar los datos de la sucursal seleccionada
+    $(document).on('submit', '#updateSucursalForm', function (e) {
+      console.log('click en update submit');
+      e.preventDefault();
+
+      const sucursalId = $('#sucursalId').val();
+      var tienda_descripcion = tinyMCE.get('updateTiendaDescripcion').getContent(); // Obtener el HTML del editor
+
+      const data = {
+        action: 'spsm_update_store', // El nombre de la acción que vincula con el callback PHP
+        sucursal_id: sucursalId,
+        local: $('#updateLocal').val().trim(),
+        tienda_nombre: $('#updateName').val().trim(),
+        direccion: $('#updateDireccion').val().trim(),
+        localidad: $('#updateLocalidad').val().trim(),
+        zona: $('#updateZona').val().trim(),
+        tiendaInfo: tienda_descripcion, // Contenido HTML del editor TinyMCE
+        latitud: $('#updateLat').val(),
+        longitud: $('#updateLng').val(),
+        gmaps_url: $('#updateGmaps').val(),
+        nonce: spsm_ajax_obj.nonce // Verificación de seguridad
+      };
+
+      $.ajax({
+        url: spsm_ajax_obj.ajax_url,
+        type: 'POST',
+        data: data,
+        beforeSend: function () {
+          $('#updateSucursalForm').addClass('hidden');
+          $('#searchInfo').removeClass('hidden').html(`<span class="spinner-border"></span><p>Cargando nuevos datos...</p>`);
+        },
+        success: function (result) {
+          console.log(result);
+
+          if (result.success) {
+            // Mostrar el mensaje de éxito
+            $('#searchInfo').html("<p>Los nuevos datos fueron cargados con éxito. Ya podés cerrar esta ventana</p>");
+
+            // Selecciona el elemento con el atributo data-storeid que coincida con sucursalId
+            var storeItem = $(`[data-storeid="${sucursalId}"]`);
+
+            // Actualiza el nombre de la tienda
+            storeItem.closest('.store-item').find('.store-name').text(data.tienda_nombre);
+          } else {
+            // Mostrar mensaje de error si result.success es falso
+            $('#searchInfo').html(`<p>Error: ${result.data}</p>`);
+            console.error('Error:', result.data);
+          }
+        },
+        error: function (xhr, status, error) {
+          // Mostrar mensaje de error en caso de fallo en la solicitud AJAX
+          $('#searchInfo').html(`<p>Ocurrió un error: ${error}</p>`);
+          console.error('AJAX Error:', error);
+        }
+      });
+    });
 
     // Funcion AJAX para eliminar puntos de interes del cliente y el servidor
     $(document).on('click', '.delete-btn', function (e) {

@@ -187,8 +187,9 @@ class Spsm_Plugin
 		$this->loader->add_action('admin_enqueue_scripts', $plugin_ajax, 'spsm_enqueue_ajax_scripts');
 		$this->loader->add_action('wp_ajax_spsm_handle_ajax', $plugin_ajax, 'spsm_handle_ajax_callback');
 		$this->loader->add_action('wp_ajax_nopriv_spsm_handle_ajax', $plugin_ajax, 'spsm_handle_ajax_callback');
-		$this->loader->add_action('wp_ajax_spsm_delete_store', $plugin_ajax, 'spsm_delete_store_handle');
 		$this->loader->add_action('wp_ajax_spsm_get_store', $plugin_ajax, 'spsm_get_store_info');
+		$this->loader->add_action('wp_ajax_spsm_update_store', $plugin_ajax, 'spsm_update_store_info');
+		$this->loader->add_action('wp_ajax_spsm_delete_store', $plugin_ajax, 'spsm_delete_store_handle');
 	}
 
 	/**

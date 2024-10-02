@@ -33,7 +33,7 @@
       let html = `
 							<li class="store-item grid grid-cols-5 sm:grid-cols-8 items-center border text-center w-full mb-1">
 									<span class="border-r col-span-1 py-2 font-bold">${id}</span>
-									<span class="border-r col-span-2 sm:col-span-5 py-2 text-start ms-2">${nombre}</span>
+									<span class="store-name border-r col-span-2 sm:col-span-5 py-2 text-start ms-2">${nombre}</span>
                   <div class="grid grid-cols-2 gap-2 col-span-2 p-1">
                     <button id="showItem" data-id="${id}" data-bs-toggle="modal" data-bs-target="#showModal" class="show-store cursor-pointer uppercase col-span-1 bg-green-500 text-white font-semibold py-2 rounded" ><span class="dashicons dashicons-visibility"></span></button>
 									  <button data-storeid="${id}" id="deleteItem" class="delete-btn cursor-pointer uppercase col-span-1 bg-red-500 text-white font-semibold py-2 rounded"><span class="dashicons dashicons-trash" ></span></button>
@@ -103,5 +103,6 @@
     allowClear: true
   });
 
+  console.log($('#updateLocalidad'));
 
 })(jQuery);

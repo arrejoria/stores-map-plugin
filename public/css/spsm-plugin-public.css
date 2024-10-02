@@ -715,10 +715,6 @@ video {
   margin-bottom: 0.25rem;
 }
 
-.mb-12 {
-  margin-bottom: 3rem;
-}
-
 .mb-2 {
   margin-bottom: 0.5rem;
 }
@@ -804,6 +800,10 @@ video {
   max-height: 400px;
 }
 
+.max-h-\[40px\] {
+  max-height: 40px;
+}
+
 .max-h-\[500px\] {
   max-height: 500px;
 }
@@ -836,6 +836,10 @@ video {
 
 .w-full {
   width: 100%;
+}
+
+.max-w-md {
+  max-width: 28rem;
 }
 
 .flex-1 {
@@ -955,6 +959,10 @@ video {
   align-self: flex-end;
 }
 
+.overflow-scroll {
+  overflow: scroll;
+}
+
 .text-nowrap {
   text-wrap: nowrap;
 }
@@ -975,6 +983,10 @@ video {
   border-bottom-width: 1px;
 }
 
+.border-b-2 {
+  border-bottom-width: 2px;
+}
+
 .border-b-4 {
   border-bottom-width: 4px;
 }
@@ -985,6 +997,10 @@ video {
 
 .border-r {
   border-right-width: 1px;
+}
+
+.border-t-0 {
+  border-top-width: 0px;
 }
 
 .border-gray-400 {
@@ -1163,10 +1179,6 @@ video {
   font-weight: 600;
 }
 
-.font-\[16px\] {
-  font-weight: 16px;
-}
-
 .uppercase {
   text-transform: uppercase;
 }
@@ -1181,6 +1193,11 @@ video {
 
 .italic {
   font-style: italic;
+}
+
+.\!text-white {
+  --tw-text-opacity: 1 !important;
+  color: rgb(255 255 255 / var(--tw-text-opacity)) !important;
 }
 
 .text-gray-300 {
@@ -1268,6 +1285,19 @@ video {
   transition-duration: 150ms;
 }
 
+@font-face {
+  font-family: gotham-bold;
+
+  src: url("../assets/fonts/Gotham-Bold.otf") format("opentype");
+}
+
+:root {
+  --primary-color: #21285a;
+  --primary-color-alt: #00fff0;
+  --secondary-color: #a600ff;
+  --adc-color: #979797;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -1301,36 +1331,48 @@ html {
   font-style: normal;
 }
 
+.ff-gotham-bold {
+  font-family: gotham-bold;
+}
+
 .text-primary-color {
-  color: #21285a;
+  color: var(--primary-color);
 }
 
 .text-primary-color-alt {
-  color: #00fff0;
+  color: var(--primary-color-alt);
 }
 
 .text-secondary-color {
-  color: #a600ff;
+  color: var(--secondary-color);
 }
 
 .text-adc-color {
-  color: #979797;
+  color: var(--adc-color);
 }
 
 .bg-primary-color {
-  background-color: #21285a;
+  background-color: var(--primary-color);
 }
 
 .bg-primary-color-alt {
-  background-color: #00fff0;
+  background-color: var(--primary-color-alt);
 }
 
 .bg-secondary-color {
-  background-color: #a600ff;
+  background-color: var(--secondary-color);
 }
 
 .bg-adc-color {
-  background-color: #a600ff;
+  background-color: var(--adc-color);
+}
+
+.border-color-primary {
+  border-color: var(--primary-color);
+}
+
+.border-color-secondary {
+  border-color: var(--secondary-color);
 }
 
 /* ! ||--------------------------------------------------------------------------------||
@@ -1345,6 +1387,33 @@ html {
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
+}
+
+.sucursal:hover {
+  cursor: pointer;
+  background-color: rgb(243 244 246 / 1);
+}
+
+.sucursal:hover h3 {
+  color: var(--secondary-color);
+}
+
+.sucursal:hover .sucursal-btn span {
+  transition: transform .3s linear;
+  transform: translateX(6px);
+}
+
+.sucursal.active {
+  color: var(--secondary-color);
+  background-color: rgb(243 244 246 / 1);
+}
+
+.sucursal.active h3 {
+  font-weight: 800;
+}
+
+.sucursal.active .item-direccion {
+  color: var(--primary-color);
 }
 
 .store-icon {
@@ -1408,7 +1477,7 @@ html {
 .punto-descripcion {
   overflow: hidden;
   max-height: 250px;
-  transition: height 1s ease-in-out, opacity 1s ease-in-out;
+  transition: all 1s ease-in-out;
   width: 100%;
 }
 
@@ -1490,9 +1559,37 @@ html {
   display: block;
 }
 
+/* Estilo para el select con la biblioteca Select2 */
+
+.select2-selection {
+  position: relative;
+  overflow: hidden;
+  padding-top: 17px !important;
+  padding-bottom: 17px !important;
+}
+
+/* Opcional: puedes ajustar también el tamaño del área seleccionada y los márgenes si es necesario */
+
+.select2-selection__rendered {
+  line-height: normal !important;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+}
+
+.hover\:bg-gray-100:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+}
+
 .hover\:bg-sky-600:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(2 132 199 / var(--tw-bg-opacity));
+}
+
+.active\:brightness-90:active {
+  --tw-brightness: brightness(.9);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 @media not all and (min-width: 768px) {
@@ -1618,10 +1715,6 @@ html {
 
   .md\:self-start {
     align-self: flex-start;
-  }
-
-  .md\:self-center {
-    align-self: center;
   }
 
   .md\:rounded-full {

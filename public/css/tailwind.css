@@ -2,9 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: gotham-bold;
+  src: url("../assets/fonts/Gotham-Bold.otf") format("opentype");
+}
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
+:root {
+  --primary-color: #21285a;
+  --primary-color-alt: #00fff0;
+  --secondary-color: #a600ff;
+  --adc-color: #979797;
+}
 
 html {
   scroll-behavior: smooth;
@@ -39,38 +49,49 @@ html {
   font-style: normal;
 }
 
+.ff-gotham-bold {
+  font-family: gotham-bold;
+}
+
 .text-primary-color {
-  color: #21285a;
+  color: var(--primary-color);
 }
 
 .text-primary-color-alt {
-  color: #00fff0;
+  color: var(--primary-color-alt);
 }
 
 .text-secondary-color {
-  color: #a600ff;
+  color: var(--secondary-color);
 }
 
 .text-adc-color {
-  color: #979797;
+  color: var(--adc-color);
 }
 
 .bg-primary-color {
-  background-color: #21285a;
+  background-color: var(--primary-color);
 }
 
 .bg-primary-color-alt {
-  background-color: #00fff0;
+  background-color: var(--primary-color-alt);
 }
 
 .bg-secondary-color {
-  background-color: #a600ff;
+  background-color: var(--secondary-color);
 }
 
 .bg-adc-color {
-  background-color: #a600ff;
+  background-color: var(--adc-color);
 }
 
+.border-color-primary {
+  border-color: var(--primary-color);
+}
+
+.border-color-secondary {
+  border-color: var(--secondary-color);
+}
 
 /* ! ||--------------------------------------------------------------------------------||
 // ! ||                    Estilos para la seccion lista de tiendas                    ||
@@ -86,6 +107,32 @@ html {
 }
 
 
+.sucursal:hover {
+  cursor: pointer;
+  background-color: rgb(243 244 246 / 1);
+}
+
+.sucursal:hover h3 {
+  color: var(--secondary-color);
+}
+
+.sucursal:hover .sucursal-btn span {
+  transition: transform .3s linear;
+  transform: translateX(6px);
+}
+
+.sucursal.active {
+  color: var(--secondary-color);
+  background-color: rgb(243 244 246 / 1);
+}
+
+.sucursal.active h3 {
+  font-weight: 800;
+}
+
+.sucursal.active .item-direccion {
+  color: var(--primary-color);
+}
 
 .store-icon {
   background-color: #ccc;
@@ -150,7 +197,7 @@ html {
 .punto-descripcion {
   overflow: hidden;
   max-height: 250px;
-  transition: height 1s ease-in-out, opacity 1s ease-in-out;
+  transition: all 1s ease-in-out;
   width: 100%;
 }
 
@@ -229,4 +276,20 @@ html {
 .show-noresults {
   opacity: 1;
   display: block;
+}
+
+/* Estilo para el select con la biblioteca Select2 */
+.select2-selection {
+  position: relative;
+  overflow: hidden;
+  padding-top: 17px !important;
+  padding-bottom: 17px !important;
+}
+
+/* Opcional: puedes ajustar también el tamaño del área seleccionada y los márgenes si es necesario */
+.select2-selection__rendered {
+  line-height: normal !important;
+  position: absolute;
+  top: 5px;
+  left: 5px;
 }

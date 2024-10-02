@@ -111,6 +111,7 @@
                     return response.json();
                 })
                 .then(data => {
+                    console.log(data);
                     if (data.length === 0) {
                         showError(address)
                         throw new Error("No se encontraron resultados para la dirección.");
@@ -145,9 +146,6 @@
             $longitudeInput.val(lon);
             $showStreet.html(`<strong>Ubicación encontrada: </strong><br> ${displayName}`);
             $('#search-button').text('Buscar');
-
-            const gmapUrl = `https://maps.google.com/?q=${lat},${lon}&ll=${lat},${lon}&z=20`;
-            $('#gmaps').val(gmapUrl);
         }
 
         function showError(address) {
@@ -180,9 +178,17 @@
                 ];
                 // Filtrar los valores vacíos y unir con comas
                 var fullAddress = addressParts.filter(Boolean).join(', ');
-                console.log(`Dirección buscada: ${fullAddress}`);
-                geocodeAddress(fullAddress);
-                $('#direccion').val(street);
+
+
+                if (fullAddress) {
+                    console.log(`Dirección buscada: ${fullAddress}`);
+                    geocodeAddress(fullAddress);
+                    $('#direccion').val(fullAddress);
+
+                    // Completar gmaps fields con el valor de fullAddress
+                    const gmapUrl = `https://www.google.com.ar/maps/search/${encodeURIComponent(fullAddress)}`;
+                    $('#gmaps').val(gmapUrl);
+                }
             } else {
                 alert("Por favor, ingresa una dirección.");
             }
@@ -221,30 +227,38 @@
             $('#lng').val(lon);
 
             // Actualizar el campo de Google Maps URL
-            var gmapUrl = `https://maps.google.com/?q=${lat},${lon}&ll=${lat},${lon}&z=20`;
-            $('#gmaps').val(gmapUrl);
+            // var gmapUrl = `https://maps.google.com/?q=${lat},${lon}&ll=${lat},${lon}&z=20`;
         });
 
 
-        function getAddressFromCoordinate(lon, lat) {
 
-
+        async function getAddressFromCoordinate(lon, lat) {
             // URL de la API de Nominatim
-            var url = `https://nominatim.openstreetmap.org/reverse?format=json&lon=${lon}&lat=${lat}`;
+            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lon=${lon}&lat=${lat}`;
 
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.display_name) {
-                        // Aquí puedes mostrar la dirección en el UI
-                        $showStreet.html(`<strong>Ubicación encontrada: </strong><br> ${data.display_name}`);
-                    } else {
-                        console.error('No se encontró la dirección.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error al obtener la dirección:', error);
-                });
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data && data.display_name) {
+                    const address = data.display_name;
+                    // Aquí puedes mostrar la dirección en el UI
+                    $showStreet.html(`<strong>Ubicación encontrada: </strong><br> ${address}`);
+
+                    var gmapUrl = `https://www.google.com.ar/maps/search/${encodeURIComponent(address)}`
+                    $('#gmaps').val(gmapUrl);
+
+                    console.log(address);
+                } else {
+                    console.error('No se encontró la dirección.');
+                    return null;
+                }
+            } catch (error) {
+                console.error('Error al obtener la dirección:', error);
+                return null;
+            }
         }
+
+
     });
 })(jQuery)
