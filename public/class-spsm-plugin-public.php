@@ -69,10 +69,11 @@ class Spsm_Plugin_Public
 	public function enqueue_styles()
 	{
 
-		wp_enqueue_style('openlayers-style', 'https://cdn.jsdelivr.net/npm/ol@v10.1.0/ol.css', array(), null, 'all');
 		wp_enqueue_style('normalize', plugin_dir_url(__FILE__) . 'css/normalize.css', array(), null, 'all');
-		// wp_enqueue_style('select2-theme',  plugin_dir_url(__FILE__) .  'css/select2-bootstrap-5-theme.min.css', array(), null, 'all');
+		wp_enqueue_style('openlayers-style', 'https://cdn.jsdelivr.net/npm/ol@v10.1.0/ol.css', array(), null, 'all');
+		wp_enqueue_style('bootstrap', plugin_dir_url(__FILE__) . 'css/bootstrap.min.css', array(), null, 'all');
 		wp_enqueue_style('select2-min',  plugin_dir_url(__FILE__) .  'css/select2.min.css', array(), null, 'all');
+		wp_enqueue_style('select2-theme',  plugin_dir_url(__FILE__) .  'css/select2-bootstrap.min.css', array(), null, 'all');
 		wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/spsm-plugin-public.css', array(), $this->version, 'all');
 	}
 
@@ -144,65 +145,67 @@ class Spsm_Plugin_Public
 	public function spsm_home_section_template()
 	{
 ?>
-		<div class="w-full px-2 spsm mb-[100px] space-y-3" id="mapContainer">
-			<div class="stores-filter flex flex-col items-center justify-center gap-2 md:flex-row w-full md:max-w-full border rounded md:rounded-full md:gap-x-3 border-gray-400 py-3 px-1 md:px-5 mx-auto !mb-7 shadow"
-				id="storesFilters">
-				<div class="w-full md:w-1/5">
-					<select class="form-select " aria-label="Default select example" name="locales" id="local">
-						<option></option>
-						<option value="Cambio Baires">Cambio Baires</option>
-						<option value="Dolar Ok">Dolar Ok</option>
-						<option value="Voy y Vuelvo">Voy y vuelvo</option>
-					</select>
-				</div>
+<div class="w-full px-2 spsm mb-[100px] space-y-3" id="mapContainer">
+    <div class="stores-filter flex flex-col items-center justify-center gap-2 md:flex-row w-full border rounded md:rounded-full md:gap-x-3 border-gray-400 py-3 px-1 md:px-5 mx-auto !mb-7 shadow"
+        id="storesFilters">
+        <div class="w-full md:w-1/5">
+            <select class="form-control select2-single" aria-label="Default select example" name="locales" id="local">
+                <option></option>
+                <option value="Cambio Baires">Cambio Baires</option>
+                <option value="Dolar Ok">Dolar Ok</option>
+                <option value="Voy y Vuelvo">Voy y vuelvo</option>
+            </select>
+        </div>
 
-				<div class="w-full md:w-1/5">
-					<select class="form-select rounded-full" name="zonas" id="zona" required>
-						<!--                      zona -->
-						<option></option>
-						<option value="caba">CABA</option>
-						<option value="zona-norte">ZONA NORTE</option>
-						<option value="zona-oeste">ZONA OESTE</option>
-						<option value="zona-sur">ZONA SUR</option>
-						<option value="interior-norte">INTERIOR NORTE</option>
-						<option value="interior-sur">INTERIOR SUR</option>
-					</select>
-				</div>
+        <div class="w-full md:w-1/5">
+            <select class="form-control select2-single rounded-full" name="zonas" id="zona" required>
+                <!--                      zona -->
+                <option></option>
+                <option value="caba">CABA</option>
+                <option value="zona-norte">ZONA NORTE</option>
+                <option value="zona-oeste">ZONA OESTE</option>
+                <option value="zona-sur">ZONA SUR</option>
+                <option value="interior-norte">INTERIOR NORTE</option>
+                <option value="interior-sur">INTERIOR SUR</option>
+            </select>
+        </div>
 
-				<div class="w-full md:w-1/4">
-					<select class="form-select " aria-label="Default select example" name="localidades" id="localidad">
-						<option></option>
-					</select>
-				</div>
+        <div class="w-full md:w-1/4">
+            <select class="form-select " aria-label="Default select example" name="localidades" id="localidad">
+                <option></option>
+            </select>
+        </div>
 
-				<div class="flex w-full md:w-1/4 relative text-sm gap-3">
-					<button id="filterBtn"
-						class="btn btn-small col-span-1 bg-secondary-color text-white rounded w-full py-2 uppercase font-bold active:brightness-90">Buscar</button>
-					<button id="resetBtn"
-						class="btn btn-small col-span-1 bg-gray-300 text-white rounded w-full py-2 uppercase font-bold active:brightness-90">Reiniciar</button>
-					<span
-						class="results-msg py-3 px-2 bg-white bottom-[-55px] border  rounded shadow-sm shadow-white text-center right-0 absolute z-10 text-nowrap text-sm font-semibold text-red-500 hide-noresults"
-						id="noResults">No se encontraron resultados</span>
-				</div>
-			</div>
-			<div class="grid grid-cols-1 md:grid-cols-7 xl:grid-cols-12 w-full md:border gap-y-3">
-				<div class="stores-content col-span-1 md:col-span-3 xl:col-span-4 relative border-l border-b shadow-md">
-					<h2
-						class="text-xl uppercase col-span-6 py-3 px-2 font-semibold bg-secondary-color text-white ff-gotham-bold">
-						Sucursales
-					</h2>
-					<ul class="lista-sucursales p-2 max-sm:max-h-[300px] max-h-[500px] scrollbar space-y-3" id="sucursales">
-					</ul>
-					<img class="scrollbar-i" src="<?= esc_attr(plugin_dir_url(__FILE__) . 'assets/images/scroll-down1.gif'); ?>"
-						alt="scrolldown lista de sucursales icon" width="100" height="80">
-				</div>
-				<div
-					class="flex flex-col  md:col-span-4 xl:col-span-8 max-md:min-h-[400px] h-full border border-t-0 border-color-secondary shadow-md">
-					<div class="punto-descripcion min-h-fit" id="storeInfo"></div>
-					<div class="punto-mapa md:h-fit flex-1 h-full min-h-[200px]" id="map"></div>
-				</div>
-			</div>
-		</div>
+        <div class="flex w-full md:w-1/4 relative gap-3">
+            <button id="filterBtn"
+                class="col-span-1 bg-secondary-color text-white rounded w-full px-3 py-2 uppercase font-bold hover:brightness-75 active:brightness-100">Buscar</button>
+            <button id="resetBtn"
+                class="col-span-1 bg-gray-300 text-white rounded w-full px-3 py-2 uppercase font-bold hover:brightness-90 active:brightness-100">Reiniciar</button>
+            <span
+                class="results-msg py-3 px-2 bg-white bottom-[-55px] border border-solid border-gray-200 rounded shadow-sm shadow-white text-center right-0 absolute z-10 text-nowrap font-semibold text-red-500 hide-noresults"
+                id="noResults">No se encontraron resultados</span>
+        </div>
+    </div>
+    <div
+        class="grid grid-cols-1 md:grid-cols-7 xl:grid-cols-12 w-full md:border-solid md:border md:border-gray-200 gap-y-3">
+        <div
+            class="stores-content col-span-1 md:col-span-3 xl:col-span-4 border-t border-solid border-color-secondary relative shadow-md">
+            <h2
+                class="text-xl uppercase col-span-6 py-3 px-2 font-semibold bg-secondary-color text-white ff-gotham-bold">
+                Sucursales
+            </h2>
+            <ul class="lista-sucursales p-2 max-sm:max-h-[300px] max-h-[500px] scrollbar space-y-3" id="sucursales">
+            </ul>
+            <img class="scrollbar-i" src="<?= esc_attr(plugin_dir_url(__FILE__) . 'assets/images/scroll-down1.gif'); ?>"
+                alt="scrolldown lista de sucursales icon" width="100" height="80">
+        </div>
+        <div
+            class="flex flex-col  md:col-span-4 xl:col-span-8 max-md:min-h-[400px] h-full border-solid border border-color-secondary shadow-md">
+            <div class="punto-descripcion relative" id="storeInfo"></div>
+            <div class="punto-mapa md:h-fit flex-1 h-full min-h-[200px]" id="map"></div>
+        </div>
+    </div>
+</div>
 <?php
 	}
 

@@ -3,7 +3,7 @@
 
   $(document).ready(function () {
     /**
-     * !IMPORTANTE INICIALIZAR VARIABLE GLOBAL
+     * !IMPORTANTE INICIALIZAR VARIABLE GLOBAL spsm_data
      */
     const spsm_stores_data = spsm_data.stores_data ? JSON.parse(spsm_data.stores_data) : [];
     const spsm_stores_empty = spsm_data.stores_empty ? spsm_data.stores_empty : false;
@@ -46,24 +46,6 @@
   })
 
 
-  // $(document).on('click', '.show-store', function (e) {
-  //   console.log('click en show store');
-
-
-  //   $.ajax({
-  //     url: spsm_ajax_obj.ajax_url,
-  //     data: data,
-  //     success: function(result){
-  //       console.log(result);
-  //     }
-  //   })
-
-  // })
-
-
-
-  // jQuery UI Functionality
-
   function matchCustom(params, data) {
 
     // If there are no search terms, return all of the data
@@ -102,7 +84,5 @@
     placeholder: '-- Seleccionar Localidad -- ',
     allowClear: true
   });
-
-  console.log($('#updateLocalidad'));
 
 })(jQuery);

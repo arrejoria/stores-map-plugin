@@ -169,8 +169,8 @@ class Spsm_Plugin
 
 		$plugin_admin = new Spsm_Plugin_Admin($this->get_plugin_name(), $this->get_version());
 
-		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
-		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
+		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles', 20);
+		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts', 20);
 		$this->loader->add_action('admin_menu', $plugin_admin, 'spsm_admin_menu');
 		// $this->loader->add_action('admin_head', $plugin_admin, 'add_stores_data_to_head');
 		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'spsm_stores_localize_scripts');
@@ -204,8 +204,8 @@ class Spsm_Plugin
 
 		$plugin_public = new Spsm_Plugin_Public($this->get_plugin_name(), $this->get_version());
 
-		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
-		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
+		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles', 20);
+		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts', 20);
 	}
 
 	/**

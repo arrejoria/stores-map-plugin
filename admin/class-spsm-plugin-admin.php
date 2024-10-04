@@ -68,7 +68,7 @@ class Spsm_Plugin_Admin
     public function enqueue_styles()
     {
         // wp_enqueue_style('quill-style', $tinymce_path, array(), null, 'all');
-        wp_enqueue_style('jquery-ui', plugin_dir_url(__FILE__) . 'css/jquery-ui.min.css', array(), null, 'all');
+        // wp_enqueue_style('jquery-ui', plugin_dir_url(__FILE__) . 'css/jquery-ui.min.css', array(), null, 'all');
         wp_enqueue_style('select2', plugin_dir_url(__FILE__) . 'css/select2.min.css', array(), null, 'all');
         wp_enqueue_style('openlayers-style', 'https://cdn.jsdelivr.net/npm/ol@v10.1.0/ol.css', array(), null, 'all');
         wp_enqueue_style('bootstrap-style', plugin_dir_url(__FILE__) .  'css/bootstrap.min.css', array(), null, 'all');
@@ -86,7 +86,7 @@ class Spsm_Plugin_Admin
         // Encolar jQuery
         wp_enqueue_script('jquery');
         // Jquery UI
-        wp_enqueue_script('jquery-ui', plugin_dir_url(__FILE__) .  'js/jquery-ui.min.js', array('jquery'), null, true);
+        // wp_enqueue_script('jquery-ui', plugin_dir_url(__FILE__) .  'js/jquery-ui.min.js', array('jquery'), null, true);
         // Encolar Popper.js
         wp_enqueue_script('popper', plugin_dir_url(__FILE__) .  'js/poppers.min.js', array('jquery'), null, true);
         // Encolar Bootstrap
@@ -264,10 +264,10 @@ class Spsm_Plugin_Admin
                     <ul id="store-items"
                         class="store-items border p-2 box-border min-h-[400px] overflow-scroll max-h-[400px]">
                     </ul>
-                    <?php
-                            $this->spsm_store_handle_modal();
-                            ?>
                 </div>
+                <?php
+                        $this->spsm_store_handle_modal();
+                        ?>
             </div>
 
             <!-- FORM STORES SECTION -->
@@ -288,7 +288,7 @@ class Spsm_Plugin_Admin
     public function spsm_store_handle_modal()
     {
     ?>
-<div class="modal" id="showModal" tabindex="-1" aria-labelledby="storeTitleMd" aria-hidden="true">
+<div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="storeTitleMd" aria-hidden="true">
     <div class=" modal-dialog modal-fullscreen-sm-down modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -301,9 +301,8 @@ class Spsm_Plugin_Admin
                         ?>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary uppercase w-full max-w-md text-center"
-                    data-bs-dismiss="modal">Cerrar Ventana
-                    Modal
+                <button type="button" class="btn btn-secondary uppercase w-full max-w-xs mx-auto text-center"
+                    data-bs-dismiss="modal">Cerrar Ventana Modal</button>
             </div>
         </div>
     </div>
@@ -581,8 +580,8 @@ class Spsm_Plugin_Admin
     <div class="flex relative my-3 ">
         <span class="absolute left-5 top-[5px] text-white" id="formSpinner"></span>
         <input id="updateSubmit"
-            class="w-full px-4 py-2 text-center bg-sky-500 text-white font-bold text-xl rounded cursor-pointer hover:bg-sky-600"
-            type="submit" value="ACTUALIZAR SUCURSAL">
+            class="w-full px-4 py-2 text-center bg-sky-500 hover:bg-sky-600 text-white font-bold text-xl rounded cursor-pointer"
+            type="submit" value="ACTUALIZAR">
     </div>
 </form>
 <?php

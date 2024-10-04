@@ -17,7 +17,10 @@
             target: "map",
             layers: [
                 new ol.layer.Tile({
-                    source: new ol.source.OSM()
+                    source: new ol.source.OSM(),
+                    style: {
+                        'fill-color': 'darkgray',
+                    }
                 })
             ],
             view: new ol.View({

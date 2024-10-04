@@ -17,8 +17,21 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: smooth !important;
 }
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  color: var(--primary-color);
+  margin: 0;
+}
+
 
 .ol-popup {
   position: absolute;
@@ -43,54 +56,51 @@ html {
 }
 
 .ff-monts {
-  font-family: "Montserrat", system-ui;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
+  font-family: "Montserrat", system-ui !important;
 }
 
 .ff-gotham-bold {
-  font-family: gotham-bold;
+  font-family: gotham-bold !important;
 }
 
 .text-primary-color {
-  color: var(--primary-color);
+  color: var(--primary-color) !important;
 }
 
 .text-primary-color-alt {
-  color: var(--primary-color-alt);
+  color: var(--primary-color-alt) !important;
 }
 
 .text-secondary-color {
-  color: var(--secondary-color);
+  color: var(--secondary-color) !important;
 }
 
 .text-adc-color {
-  color: var(--adc-color);
+  color: var(--adc-color) !important;
 }
 
 .bg-primary-color {
-  background-color: var(--primary-color);
+  background-color: var(--primary-color) !important;
 }
 
 .bg-primary-color-alt {
-  background-color: var(--primary-color-alt);
+  background-color: var(--primary-color-alt) !important;
 }
 
 .bg-secondary-color {
-  background-color: var(--secondary-color);
+  background-color: var(--secondary-color) !important;
 }
 
 .bg-adc-color {
-  background-color: var(--adc-color);
+  background-color: var(--adc-color) !important;
 }
 
 .border-color-primary {
-  border-color: var(--primary-color);
+  border-color: var(--primary-color) !important;
 }
 
 .border-color-secondary {
-  border-color: var(--secondary-color);
+  border-color: var(--secondary-color) !important;
 }
 
 /* ! ||--------------------------------------------------------------------------------||
@@ -99,13 +109,18 @@ html {
 */
 
 /* Diferentes estilos para la tipografia Montserrat */
-.smsp {
+.spsm {
   font-family: "Montserrat", system-ui !important;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
+  font-size: 14px !important;
+  min-height: 600px;
 }
 
+.sucursal {
+  border-bottom: 1px solid var(--secondary-color);
+}
 
 .sucursal:hover {
   cursor: pointer;
@@ -122,16 +137,20 @@ html {
 }
 
 .sucursal.active {
-  color: var(--secondary-color);
   background-color: rgb(243 244 246 / 1);
 }
 
 .sucursal.active h3 {
+  color: var(--secondary-color);
   font-weight: 800;
 }
 
 .sucursal.active .item-direccion {
   color: var(--primary-color);
+}
+
+.sucursal.active .sucursal-btn span {
+  transform: translateX(10px);
 }
 
 .store-icon {
@@ -159,20 +178,6 @@ html {
   animation: infinite ease-in 1.5s scrollDown;
 }
 
-.scrollbar-i::before {
-  content: 'Hacer Scroll';
-  position: absolute;
-  height: 10px;
-  width: 100%;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 9;
-  opacity: .7;
-  transition: all .6s linear;
-  animation: infinite ease-in 1.5s scrollDown;
-}
-
 @keyframes scrollDown {
   0% {
     bottom: 30px;
@@ -196,9 +201,38 @@ html {
 
 .punto-descripcion {
   overflow: hidden;
-  max-height: 250px;
   transition: all 1s ease-in-out;
   width: 100%;
+}
+
+.info-content {
+  scroll-behavior: smooth;
+}
+
+.info-content::-webkit-scrollbar {
+  width: 16px;
+  background-clip: padding-box;
+}
+
+.info-content::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  background-color: var(--secondary-color);
+  border-right: 10px solid rgba(0, 0, 0, 0);
+  border-top: 10px solid rgba(0, 0, 0, 0);
+  border-bottom: 10px solid rgba(0, 0, 0, 0);
+}
+
+.info-content::-webkit-scrollbar-track {
+  background-color: #F4F4F4;
+  height: 8px;
+  background-clip: padding-box;
+  border-right: 10px solid rgba(0, 0, 0, 0);
+  border-top: 10px solid rgba(0, 0, 0, 0);
+  border-bottom: 10px solid rgba(0, 0, 0, 0);
+}
+
+.info-content::-webkit-scrollbar-button {
+  display: none;
 }
 
 .punto-mapa {
@@ -246,7 +280,7 @@ html {
 
 .select2-results__options::-webkit-scrollbar-thumb {
   background-clip: padding-box;
-  background-color: #0F2464;
+  background-color: var(--primary-color);
   border-right: 10px solid rgba(0, 0, 0, 0);
   border-top: 10px solid rgba(0, 0, 0, 0);
   border-bottom: 10px solid rgba(0, 0, 0, 0);
@@ -257,7 +291,7 @@ html {
 }
 
 .select2-results__options {
-  color: #0F2464;
+  color: var(--primary-color);
   font-family: "Montserrat", system-ui !important;
   font-weight: 500;
   text-transform: capitalize;
@@ -278,18 +312,21 @@ html {
   display: block;
 }
 
-/* Estilo para el select con la biblioteca Select2 */
-.select2-selection {
+/* .select2-container--bootstrap .select2-dropdown {
+  box-shadow: 0px 0px 2px var(--secondary-color) !important;
+  border-color: var(--secondary-color);
+} */
+
+/* .select2-selection {
   position: relative;
   overflow: hidden;
-  padding-top: 17px !important;
-  padding-bottom: 17px !important;
+  padding-top: 15px !important;
+  padding-bottom: 15px !important;
 }
 
-/* Opcional: puedes ajustar también el tamaño del área seleccionada y los márgenes si es necesario */
 .select2-selection__rendered {
   line-height: normal !important;
   position: absolute;
   top: 5px;
   left: 5px;
-}
+} */

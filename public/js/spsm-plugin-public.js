@@ -36,10 +36,10 @@
 			const store = ALL_SUCURSALES.find((store) => store.id === sucursalId)
 
 
-			let html = `<div class="relative border-l">
-							<h2 class="text-xl uppercase py-3 px-2 font-semibold bg-secondary-color text-white">Más información: </h2>
-							<div class="info-content flex flex-col gap-3 py-3 px-2 text-sm">
-								<div class="grid md:grid-cols-2 gap-3 border-b pb-5 px-2">
+			let html = `<div>
+							<h2 class="text-xl uppercase py-3 px-2 font-semibold bg-secondary-color text-white border-l border-white border-solid">Más información: </h2>
+							<div class="info-content flex flex-col gap-3 py-3 px-2 overflow-y-scroll max-h-[250px]">
+								<div class="grid md:grid-cols-2 gap-3 border-b border-solid border-gray-200 pb-5 px-2">
 									<div class="flex flex-col col-span-1">
 										<span class="font-semibold text-[16px]">Dirección:</span>
 										<p class="info-direccion">${store.direccion}</p>
@@ -56,11 +56,11 @@
 										</div>
 									</div>
 								</div>
-								<div class="flex max-md:flex-col items-start self-start gap-5 w-full justify-between">
-									<div class="flex flex-col gap-y-1 p-2">
+								<div class="flex max-lg:flex-col items-start self-start gap-3 w-full justify-between">
+									<div class="flex flex-col gap-y-1 p-2 flex-auto">
 											${store.tienda_info}
 									</div>
-									<div class="flex flex-col gap-y-1 p-2">
+									<div class="flex flex-col gap-y-1 p-2 flex-auto">
 										<span class="font-semibold text-[16px]">Ir a la ubicación:</span>
 										<p>Podes visitar nuestra sucursal en google maps para obtener más información sobre como llegar</p>
 										<a href="${store.gmaps_url}" target="_blank" class="mt-5 font-semibold self-end bg-secondary-color px-3 py-2 rounded !text-white inline-block w-fit">Ir a Maps</a>
@@ -86,8 +86,8 @@
 			remove_active_sucursal_state()
 			$(".punto-descripcion")
 				.addClass("hide-descripcion")
-				.removeClass(["show-descripcion", "md:row-span-1"])
-			$(".punto-mapa").addClass("md:row-span-2")
+				.removeClass(["show-descripcion"])
+			$(".punto-mapa").addClass("")
 			// $('.punto-descripcion').addClass('hidePuntoDescripcion')
 		})
 
@@ -236,11 +236,11 @@
 				} = store
 
 				// Crear el HTML para cada sucursal
-				let html = `<li data-id="${id}" class="sucursal grid grid-cols-4 items-center gap-1 py-3 px-1 bg-white border-b-2 border-color-secondary hover:bg-gray-100">
+				let html = `<li data-id="${id}" class="sucursal grid grid-cols-4 items-center gap-1 py-3 px-1 border-b-2 border-color-secondary">
                         <div class="col-span-3 flex flex-col gap-2">
-                            <h3 class="text-[16px] ff-gotham-bold font-bold uppercase">${tienda_nombre}</h3>
-							<p class="item-direccion text-sm">${direccion}</p>
-							<p class="item-local text-sm italic text-gray-400">${local}</p>
+                            <h3 class="text-xl ff-gotham-bold uppercase">${tienda_nombre}</h3>
+							<p class="item-direccion">${direccion}</p>
+							<p class="item-local italic text-gray-400">${local}</p>
                         </div>
                        <button class="sucursal-btn col-span-1 text-color-primary p-1 text-center max-h-[40px]" ><span class="dashicons dashicons-arrow-right-alt2"></span></button >
                     </li>`
@@ -286,17 +286,20 @@
 		function init_select2_fields() {
 			$("#local").select2({
 				placeholder: "Seleccionar local",
-				width: "100%"
+				width: "100%",
+				theme: 'bootstrap'
 			})
 
 			$("#zona").select2({
 				placeholder: "Seleccionar zona",
-				width: "100%"
+				width: "100%",
+				theme: 'bootstrap'
 			})
 
 			$("#localidad").select2({
 				placeholder: "Seleccionar localidad",
-				width: "100%"
+				width: "100%",
+				theme: 'bootstrap'
 			})
 		}
 
